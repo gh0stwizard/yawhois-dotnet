@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30204.135
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaWhois", "YaWhois\YaWhois.csproj", "{7985FE49-D597-497F-839E-7767B431DCBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YaWhois.App", "YaWhois.App\YaWhois.App.csproj", "{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7985FE49-D597-497F-839E-7767B431DCBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7985FE49-D597-497F-839E-7767B431DCBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7985FE49-D597-497F-839E-7767B431DCBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7985FE49-D597-497F-839E-7767B431DCBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01D78E13-47A0-4C03-8855-8F244F6ED39C}
+	EndGlobalSection
+EndGlobal
