@@ -5,7 +5,7 @@ using System.Text;
 
 namespace YaWhois.Utils
 {
-    // Port of C code from musl. See:
+    // Port of C code from musl. See details here:
     // strtol:
     //   1. http://git.musl-libc.org/cgit/musl/tree/src/stdlib/strtol.c
     //   2. http://git.musl-libc.org/cgit/musl/tree/src/internal/intscan.c
@@ -47,7 +47,7 @@ namespace YaWhois.Utils
         // all errors are skip silently because we don't need `errno` support.
         private static ulong intscan(Stream f, uint @base, int pok, ulong lim)
         {
-            int c;
+            byte c;
             int neg = 0;
             uint x;
             ulong y;
@@ -55,21 +55,21 @@ namespace YaWhois.Utils
             if (@base > 36 || @base == 1)
                 throw new ArgumentException("base");
 
-            while (isspace((c = f.ReadByte()))) ;
+            while (isspace(c = (byte)f.ReadByte())) ;
 
             if (c == '+' || c == '-')
             {
                 neg = c == '-' ? -1 : 0;
-                c = f.ReadByte();
+                c = (byte)f.ReadByte();
             }
 
             if ((@base == 0 || @base == 16) && c == '0')
             {
-                c = f.ReadByte();
+                c = (byte)f.ReadByte();
                 if ((c | 32) == 'x')
                 {
-                    c = f.ReadByte();
-                    if (table[(byte)c] >= 16)
+                    c = (byte)f.ReadByte();
+                    if (table[c] >= 16)
                     {
                         f.Position--;
                         if (pok != 0) f.Position--;
@@ -86,7 +86,7 @@ namespace YaWhois.Utils
             else
             {
                 if (@base == 0) @base = 10;
-                if (table[(byte)c] >= @base)
+                if (table[c] >= @base)
                 {
                     f.Position--;
                     f.Seek(0, SeekOrigin.Begin);
@@ -97,31 +97,31 @@ namespace YaWhois.Utils
 
             if (@base == 10)
             {
-                for (x = 0; c - '0' < 10u && x < uint.MaxValue / 10 - 1; c = f.ReadByte())
-                    x = (uint)(x * 10 + (c - '0'));
-                for (y = x; c - '0' < 10u && y < ulong.MaxValue / 10 && 10 * y <= ulong.MaxValue - (uint)(c - '0'); c = f.ReadByte())
-                    y = (y * 10) + (uint)(c - '0');
+                for (x = 0; c - '0' < 10u && x < uint.MaxValue / 10 - 1; c = (byte)f.ReadByte())
+                    x = x * 10 + c - '0';
+                for (y = x; c - '0' < 10u && y < ulong.MaxValue / 10 && 10 * y <= ulong.MaxValue - (uint)(c - '0'); c = (byte)f.ReadByte())
+                    y = y * 10 + c - '0';
                 if (c - '0' >= 10u) goto done;
             }
             else if ((@base & (@base - 1)) > 0)
             {
                 int bs = "\0\x31\x32\x34\x37\x33\x36\x35"[(0x17 * (int)@base) >> 5 & 7];
-                for (x = 0; table[(byte)c] < @base && x <= uint.MaxValue / 32; c = f.ReadByte())
-                    x = x << bs | table[(byte)c];
-                for (y = x; table[(byte)c] < @base && y <= ulong.MaxValue >> bs; c = f.ReadByte())
-                    y = y << bs | table[(byte)c];
+                for (x = 0; table[c] < @base && x <= uint.MaxValue / 32; c = (byte)f.ReadByte())
+                    x = x << bs | table[c];
+                for (y = x; table[c] < @base && y <= ulong.MaxValue >> bs; c = (byte)f.ReadByte())
+                    y = y << bs | table[c];
             }
             else
             {
-                for (x = 0; table[(byte)c] < @base && x <= uint.MaxValue / 36 - 1; c = f.ReadByte())
+                for (x = 0; table[c] < @base && x <= uint.MaxValue / 36 - 1; c = (byte)f.ReadByte())
                     x = x * @base + table[c];
-                for (y = x; table[(byte)c] < @base && y <= ulong.MaxValue / @base && @base * y <= ulong.MaxValue - table[(byte)c]; c = f.ReadByte())
-                    y = y * @base + table[(byte)c];
+                for (y = x; table[c] < @base && y <= ulong.MaxValue / @base && @base * y <= ulong.MaxValue - table[c]; c = (byte)f.ReadByte())
+                    y = y * @base + table[c];
             }
 
-            if (table[(byte)c] < @base)
+            if (table[c] < @base)
             {
-                for (; table[(byte)c] < @base; c = f.ReadByte()) ;
+                for (; table[c] < @base; c = (byte)f.ReadByte()) ;
                 //errno = ERANGE;
                 y = lim;
                 if ((lim & 1) > 0) neg = 0;
@@ -185,14 +185,14 @@ namespace YaWhois.Utils
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong strtoul(string s, out long end, int @base)
+        public static uint strtoul(string s, out long end, int @base)
         {
-            return strtox(s, out end, @base, ulong.MaxValue);
+            return (uint)strtox(s, out end, @base, ulong.MaxValue);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong strtoul(string s, int @base)
+        public static uint strtoul(string s, int @base)
         {
-            return strtox(s, out long _, @base, ulong.MaxValue);
+            return (uint)strtox(s, out long _, @base, ulong.MaxValue);
         }
     }
 }
