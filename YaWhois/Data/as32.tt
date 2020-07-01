@@ -1,0 +1,73 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.CodeDom.Compiler" #>
+<#@ output extension=".cs" #>
+//
+// Auto-generated code. Don't edit.
+//
+
+using System;
+using System.Text.RegularExpressions;
+
+namespace YaWhois.Data
+{
+    public partial class Assignments
+    {
+        /// <summary>
+        /// Format: First / Last / Server.
+        /// </summary>
+        public static readonly Tuple<uint, uint, string>[] AS32 = {
+<#
+        var ttdir = Path.GetDirectoryName(Host.TemplateFile);
+        var fileName = Path.Combine(ttdir, "as32.txt");
+        var lines = File.ReadLines(fileName);
+        var re1 = new Regex("^(\\d+)\\.(\\d+)\\s+(\\d+)\\.(\\d+)\\s+([\\w\\.-]+)$");
+        var re2 = new Regex("^(\\d+)\\s+(\\d+)\\s+([\\w\\.-]+)$");
+        int linenum = 0;
+        ulong first, last;
+        string server;
+        foreach (var line in lines) {
+            linenum++;
+
+            // skip comments
+            if (Regex.IsMatch(line, "^\\s*#|^\\s*$")) continue;
+
+            var m1 = re1.Match(line);
+
+            if (m1.Success) {
+                first = (ulong.Parse(m1.Groups[1].Value) << 16)+ ulong.Parse(m1.Groups[2].Value);
+                last = (ulong.Parse(m1.Groups[3].Value) << 16)+ ulong.Parse(m1.Groups[4].Value);
+                server = m1.Groups[5].Value;
+            }
+            else {
+                var m2 = re2.Match(line);
+
+                if (m2.Success) {
+                    first = ulong.Parse(m2.Groups[1].Value);
+                    last = ulong.Parse(m2.Groups[2].Value);
+                    server = m2.Groups[3].Value;
+                }
+                else {
+                    var msg = string.Format("Invalid format in line \"{0}\"", line);
+                    this.Host.LogErrors(new CompilerErrorCollection()
+                        { new CompilerError(fileName,
+                            linenum, 0, "0", // Line, column, error ID.
+                            msg)
+                        }
+                    );
+                    continue;
+                }
+            }
+
+            if (!server.Contains("."))
+                server = "whois." + server + ".net";
+#>
+            Tuple.Create(<#= first #>U, <#= last #>U, "<#= server #>"),
+<#
+        }
+#>
+        };
+    }
+}
