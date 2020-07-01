@@ -13,10 +13,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="Data\as16.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>as16.tt</DependentUpon>
+    </None>
+    <None Include="Data\gtld.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>gtld.tt</DependentUpon>
+    </None>
     <None Include="Data\ipv6.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ipv6.tt</DependentUpon>
+    </None>
+    <None Include="Data\tld.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>tld.tt</DependentUpon>
     </None>
   </ItemGroup>
 
@@ -26,9 +41,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\as16.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>as16.cs</LastGenOutput>
+    </None>
+    <None Update="Data\as32.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>as32.cs</LastGenOutput>
+    </None>
+    <None Update="Data\gtld.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>gtld.cs</LastGenOutput>
+    </None>
     <None Update="Data\ipv6.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ipv6.cs</LastGenOutput>
+    </None>
+    <None Update="Data\tld.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>tld.cs</LastGenOutput>
     </None>
   </ItemGroup>
 
@@ -37,10 +68,30 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Data\as16.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>as16.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Data\as32.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>as32.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Data\gtld.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>gtld.tt</DependentUpon>
+    </Compile>
     <Compile Update="Data\ipv6.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ipv6.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Data\tld.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>tld.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 

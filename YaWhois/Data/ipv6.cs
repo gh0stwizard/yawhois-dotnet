@@ -3,6 +3,7 @@
 //
 
 using System;
+using System.Text.RegularExpressions;
 
 namespace YaWhois.Data
 {
@@ -11,40 +12,40 @@ namespace YaWhois.Data
         /// <summary>
         /// Format: Network / MaskLength / Server.
         /// </summary>
-        public static readonly Tuple<ulong, int, string>[] IPv6 = {
-            Tuple.Create(536936448UL, 32, "\x0B"),
-            Tuple.Create(536936960UL, 23, "whois.apnic.net"),
-            Tuple.Create(536937472UL, 23, "whois.arin.net"),
-            Tuple.Create(536937984UL, 23, "whois.ripe.net"),
-            Tuple.Create(536938496UL, 22, "whois.ripe.net"),
-            Tuple.Create(536939520UL, 22, "whois.apnic.net"),
-            Tuple.Create(536940544UL, 22, "whois.lacnic.net"),
-            Tuple.Create(536941568UL, 22, "whois.ripe.net"),
-            Tuple.Create(536942592UL, 23, "whois.arin.net"),
-            Tuple.Create(536943104UL, 23, "whois.ripe.net"),
-            Tuple.Create(536943616UL, 22, "whois.ripe.net"),
-            Tuple.Create(536944640UL, 19, "whois.ripe.net"),
-            Tuple.Create(536952832UL, 23, "whois.ripe.net"),
-            Tuple.Create(536953344UL, 23, "whois.afrinic.net"),
-            Tuple.Create(536953856UL, 23, "whois.apnic.net"),
-            Tuple.Create(536954368UL, 23, "whois.ripe.net"),
-            Tuple.Create(536954880UL, 23, "whois.arin.net"),
-            Tuple.Create(536955392UL, 23, "whois.ripe.net"),
-            Tuple.Create(536955904UL, 22, "whois.ripe.net"),
-            Tuple.Create(536956928UL, 20, "whois.ripe.net"),
-            Tuple.Create(536969216UL, 18, "whois.apnic.net"),
-            Tuple.Create(537001984UL, 16, "\x0A"),
-            Tuple.Create(537067520UL, 18, "whois.ripe.net"),
-            Tuple.Create(603979776UL, 20, "whois.nic.or.kr"),
-            Tuple.Create(603979776UL, 12, "whois.apnic.net"),
-            Tuple.Create(637534208UL, 12, "whois.arin.net"),
-            Tuple.Create(638582784UL, 23, "whois.arin.net"),
-            Tuple.Create(639631360UL, 23, "whois.arin.net"),
-            Tuple.Create(640679936UL, 12, "whois.arin.net"),
-            Tuple.Create(671088640UL, 12, "whois.lacnic.net"),
-            Tuple.Create(704643072UL, 12, "whois.ripe.net"),
-            Tuple.Create(705691648UL, 12, "whois.ripe.net"),
-            Tuple.Create(738197504UL, 12, "whois.afrinic.net"),
+        public static readonly Tuple<uint, ushort, string>[] IPv6 = {
+            Tuple.Create(536936448U, (ushort)32, "\x0B"),
+            Tuple.Create(536936960U, (ushort)23, "whois.apnic.net"),
+            Tuple.Create(536937472U, (ushort)23, "whois.arin.net"),
+            Tuple.Create(536937984U, (ushort)23, "whois.ripe.net"),
+            Tuple.Create(536938496U, (ushort)22, "whois.ripe.net"),
+            Tuple.Create(536939520U, (ushort)22, "whois.apnic.net"),
+            Tuple.Create(536940544U, (ushort)22, "whois.lacnic.net"),
+            Tuple.Create(536941568U, (ushort)22, "whois.ripe.net"),
+            Tuple.Create(536942592U, (ushort)23, "whois.arin.net"),
+            Tuple.Create(536943104U, (ushort)23, "whois.ripe.net"),
+            Tuple.Create(536943616U, (ushort)22, "whois.ripe.net"),
+            Tuple.Create(536944640U, (ushort)19, "whois.ripe.net"),
+            Tuple.Create(536952832U, (ushort)23, "whois.ripe.net"),
+            Tuple.Create(536953344U, (ushort)23, "whois.afrinic.net"),
+            Tuple.Create(536953856U, (ushort)23, "whois.apnic.net"),
+            Tuple.Create(536954368U, (ushort)23, "whois.ripe.net"),
+            Tuple.Create(536954880U, (ushort)23, "whois.arin.net"),
+            Tuple.Create(536955392U, (ushort)23, "whois.ripe.net"),
+            Tuple.Create(536955904U, (ushort)22, "whois.ripe.net"),
+            Tuple.Create(536956928U, (ushort)20, "whois.ripe.net"),
+            Tuple.Create(536969216U, (ushort)18, "whois.apnic.net"),
+            Tuple.Create(537001984U, (ushort)16, "\x0A"),
+            Tuple.Create(537067520U, (ushort)18, "whois.ripe.net"),
+            Tuple.Create(603979776U, (ushort)20, "whois.nic.or.kr"),
+            Tuple.Create(603979776U, (ushort)12, "whois.apnic.net"),
+            Tuple.Create(637534208U, (ushort)12, "whois.arin.net"),
+            Tuple.Create(638582784U, (ushort)23, "whois.arin.net"),
+            Tuple.Create(639631360U, (ushort)23, "whois.arin.net"),
+            Tuple.Create(640679936U, (ushort)12, "whois.arin.net"),
+            Tuple.Create(671088640U, (ushort)12, "whois.lacnic.net"),
+            Tuple.Create(704643072U, (ushort)12, "whois.ripe.net"),
+            Tuple.Create(705691648U, (ushort)12, "whois.ripe.net"),
+            Tuple.Create(738197504U, (ushort)12, "whois.afrinic.net"),
         };
     }
 }
