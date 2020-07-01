@@ -1,0 +1,98 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.CodeDom.Compiler" #>
+<#@ output extension=".cs" #>
+//
+// Auto-generated code. Don't edit.
+//
+
+using System;
+using System.Text.RegularExpressions;
+
+namespace YaWhois.Data
+{
+    public partial class Assignments
+    {
+        /// <summary>
+        /// Format: TLD / Hint / Server
+        /// </summary>
+        public static readonly Tuple<string, Hints, string>[] TLD = {
+<#
+        var ttdir = Path.GetDirectoryName(Host.TemplateFile);
+        var fileName = Path.Combine(ttdir, "tld.txt");
+        var lines = File.ReadLines(fileName);
+        var re1 = new Regex("^\\.(\\w[\\w\\d\\.\\-]+)\\s+([\\w\\d\\.\\:\\-]+|[A-Z]+\\s+.*)$");
+        int linenum = 0;
+        foreach (var str in lines) {
+            linenum++;
+
+            var line = str;
+
+            // skip comments
+            if (Regex.IsMatch(line, "^\\s*#|^\\s*$")) continue;
+
+            // cleanup inline comments & spaces
+            line = Regex.Replace(line, "#.*$", "").Trim();
+
+            var m1 = re1.Match(line);
+
+            if (!m1.Success)
+            {
+                var msg = string.Format("Invalid format \"{0}\"", line);
+                this.Host.LogErrors(new CompilerErrorCollection()
+                    { new CompilerError(fileName,
+                        linenum, 0, "0", // Line, column, error ID.
+                        msg)
+                    }
+                );
+                continue;
+            }
+
+            var tld = m1.Groups[1].Value;
+            var server = m1.Groups[2].Value;
+            var hint = "Hints.NONE";
+
+            if (Regex.IsMatch(server, "^W(?:EB)?\\s+"))
+            {
+                hint = "Hints.EXTERNAL";
+                server = Regex.Replace(server, "^W(?:EB)?\\s+", "");
+            }
+            else if (Regex.IsMatch(server, "^VERISIGN\\s+"))
+            {
+                hint = "Hints.CSRNIC";
+                server = Regex.Replace(server, "^VERISIGN\\s+", "");
+            }
+            else if (server == "NONE")
+            {
+                hint = "Hints.NOSERVER";
+                server = "";
+            }
+            else if (server == "AFILIAS")
+            {
+                hint = "Hints.AFILIAS";
+                server = "whois.afilias-grs.info";
+            }
+            else if (server == "whois.registry.in")
+            {
+                hint = "Hints.AFILIAS";
+            }
+            else if (server == "ARPA")
+            {
+                hint = "Hints.IPv4";
+                server = "";
+            }
+            else if (server == "IP6")
+            {
+                hint = "Hints.IPv6";
+                server = "";
+            }
+#>
+            Tuple.Create("<#= tld #>", <#= hint #>, "<#= server #>"),
+<#
+        }
+#>
+        };
+    }
+}
