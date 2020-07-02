@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using Nunycode;
 using YaWhois.Utils;
 using YaWhois.Data;
+using System.Collections.Generic;
 
 namespace YaWhois
 {
@@ -34,9 +35,10 @@ namespace YaWhois
             if (!str.Contains('.'))
             {
                 /* if it is a TLD or a new gTLD then ask IANA */
-                var tld = Assignments.TLD.FirstOrDefault(a => a.Item1 == str);
+                var low = str.ToLowerInvariant();
+                var tld = Assignments.TLD.FirstOrDefault(a => a.Item1 == low);
 
-                if (tld != null || Assignments.GTLD.ContainsKey(str))
+                if (tld != null || Assignments.GTLD.Any(a => a == str))
                     return "whois.iana.org";
             }
 
@@ -63,8 +65,14 @@ namespace YaWhois
             // IPv4
 
             // TLD
+            var tld_result = FindByTLD(str);
+            if (tld_result != null)
+                return tld_result;
 
             // gTLD
+            var gtld_result = FindByNewTLD(str);
+            if (gtld_result != null)
+                return gtld_result;
 
             // no dot but hyphen -> NIC
 
@@ -210,6 +218,62 @@ namespace YaWhois
         }
 
 
+        static string FindByTLD(string fqdn, bool throwError = false)
+        {
+            var dom = fqdn.ToLowerInvariant();
+            var domlen = dom.Length;
+            var tld_result = Assignments.TLD
+                .Where(a => domlen >= a.Item1.Length - 1) // dot + tld
+                .Where(a => dom.EndsWith(a.Item1))
+                .Where(a => dom[domlen - a.Item1.Length - 1] == '.')
+                .FirstOrDefault();
+
+            if (tld_result != null)
+            {
+                switch (tld_result.Item2)
+                {
+                    case Assignments.Hints.EXTERNAL:
+                        throw new ExternalWhoisException(tld_result.Item3);
+
+                    case Assignments.Hints.NOSERVER:
+                        throw new NoServerException();
+
+                    case Assignments.Hints.IPv4:
+                    case Assignments.Hints.IPv6:
+                        throw new NotImplementedException();
+
+                    default:
+                        return tld_result.Item3;
+                }
+            }
+
+            if (throwError)
+                throw new NoServerException();
+
+            return null;
+        }
+
+
+        static string FindByNewTLD(string fqdn, bool throwError = false)
+        {
+            var dom = fqdn.ToLowerInvariant();
+            var domlen = dom.Length;
+            var gtld = Assignments.GTLD
+                .Where(tld => domlen >= tld.Length - 1) // dot + tld
+                .Where(tld => dom.EndsWith(tld))
+                .Where(tld => dom[domlen - tld.Length - 1] == '.')
+                .FirstOrDefault();
+
+            if (gtld != null)
+                return "whois.nic." + gtld;
+
+            if (throwError)
+                throw new NoServerException();
+
+            return null;
+        }
+
+
         #region Exceptions
 
         public class NoServerException : Exception
@@ -230,6 +294,18 @@ namespace YaWhois
             /// </summary>
             public UnknownNetworkException()
                 : base("Unknown AS number or IP network.")
+            { }
+        }
+
+
+        public class ExternalWhoisException: Exception
+        {
+            /// <summary>
+            /// You can access the whois database at {source}.
+            /// </summary>
+            /// <param name="source"></param>
+            public ExternalWhoisException(string source)
+                : base(string.Format("You can access the whois database at {0}", source))
             { }
         }
 

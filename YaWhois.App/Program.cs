@@ -13,19 +13,7 @@ namespace YaWhois.App
                 "2a00:1450:4010:c01::65",
                 "2a00:",
             };
-
-            foreach (var ip in ipv6)
-            {
-                try
-                {
-                    var s = QueryParser.GuessServer(ip);
-                    Console.WriteLine($"{ip} >>> {s}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"{ip} ERROR: {e.Message}");
-                }
-            }
+            DoTest(ipv6);
 
 
             var asn = new string[]
@@ -35,54 +23,55 @@ namespace YaWhois.App
                 "as65536",
                 "as65336"
             };
-
-            foreach (var @as in asn)
-            {
-                try
-                {
-                    var s = QueryParser.GuessServer(@as);
-                    Console.WriteLine($"{@as} >>> {s}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"{@as} ERROR: {e.Message}");
-                }
-            }
-
-            var t = new Dictionary<string, DictionaryOptions>()
-            {
-                { "test", new DictionaryOptions {Server = "" } }
-            };
+            DoTest(asn);
 
 
-            var tldlist = new string[]
+            var puretld = new string[]
             {
                 "in",
                 "im",
                 "pro"
             };
+            DoTest(puretld);
 
-            foreach (var tld in tldlist)
+
+            var tld = new string[]
             {
-                try
-                {
-                    var s = QueryParser.GuessServer(tld);
-                    Console.WriteLine($"{tld} >>> {s}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"{tld} ERROR: {e.Message}");
-                }
-            }
+                "ଭାରତ.ଭାରତ",
+                ".ଭାରତ",
+                "central.no.com",
+                "casual.com",
+                "испытание.рф",
+                ".рф"
+            };
+            DoTest(tld);
+
+            var gtld = new string[]
+            {
+                "test.bank"
+            };
+            DoTest(gtld);
 
 
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
 
-        public struct DictionaryOptions
+
+        static void DoTest(IEnumerable<string> list)
         {
-            public string Server;
+            foreach (var el in list)
+            {
+                try
+                {
+                    var s = QueryParser.GuessServer(el);
+                    Console.WriteLine($"{el} >>> {s}");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"{el} ERROR: {e.Message}");
+                }
+            }
         }
     }
 }

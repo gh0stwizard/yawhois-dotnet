@@ -19,7 +19,7 @@ namespace YaWhois.Data
         /// <summary>
         /// Format: TLD / Hint / Server
         /// </summary>
-        public static readonly Dictionary<string, bool> GTLD = new Dictionary<string, bool>() {
+        public static readonly string[] GTLD = {
 <#
         var ttdir = Path.GetDirectoryName(Host.TemplateFile);
         var fileName = Path.Combine(ttdir, "gtld.txt");
@@ -41,7 +41,7 @@ namespace YaWhois.Data
                 continue;
             }
 #>
-            { "<#= line #>", true },
+            "<#= line #>",
 <#
         }
 #>
