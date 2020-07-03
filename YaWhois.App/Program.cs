@@ -67,6 +67,13 @@ namespace YaWhois.App
             DoTest(nic);
 
 
+            var teredo = new string[]
+            {
+                "2001:0000:4136:e378:8000:63bf:3fff:fdd2",
+            };
+            DoTest(teredo);
+
+
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }

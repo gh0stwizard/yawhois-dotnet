@@ -125,8 +125,11 @@ namespace YaWhois
                         throw new NoServerException();
 
                 case '\x0B':
-                    var t = ConvertTeredo(s);
-                    return ParseTeredo(t);
+                    var ip4teredo = ConvertTeredo(s);
+                    if (TryParseIPv4(ip4teredo, out uint teredoIp))
+                        return FindIPv4(teredoIp);
+                    else
+                        throw new NoServerException();
 
                 case '\x06':
                     throw new UnknownNetworkException();
