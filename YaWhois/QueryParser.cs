@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using Nunycode;
 using YaWhois.Utils;
 using YaWhois.Data;
-using System.Collections.Generic;
 
 namespace YaWhois
 {
@@ -63,13 +62,33 @@ namespace YaWhois
             }
 
             // IPv4
+            if (TryParseIP(str, out uint ip))
+            {
+                var assign = Assignments.IPv4
+                    .Where(a => (ip & a.Item2) == a.Item1)
+                    .FirstOrDefault();
+
+                if (assign != null)
+                {
+                    switch (assign.Item3[0])
+                    {
+                        case '\x05':
+                            throw new NoServerException();
+
+                        default:
+                            return assign.Item3;
+                    }
+                }
+
+                throw new NoServerException();
+            }
 
             // TLD
             var tld_result = FindByTLD(str);
             if (tld_result != null)
                 return tld_result;
 
-            // gTLD
+            // new gTLD, e.g. they have whois.nic.[TLD]
             var gtld_result = FindByNewTLD(str);
             if (gtld_result != null)
                 return gtld_result;
@@ -271,6 +290,27 @@ namespace YaWhois
                 throw new NoServerException();
 
             return null;
+        }
+
+
+        static bool TryParseIP(string s, out uint ip)
+        {
+            ip = 0;
+            var r = new Regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\/?");
+            var m = r.Match(s);
+
+            if (!m.Success)
+                return false;
+
+            for (var i = 1; i <= 4; i++)
+            {
+                var oct = uint.Parse(m.Groups[i].Value);
+                if (oct > 255)
+                    return false;
+                ip += oct << (32 - 8 * i);
+            }
+
+            return true;
         }
 
 

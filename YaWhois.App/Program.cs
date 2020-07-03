@@ -52,6 +52,14 @@ namespace YaWhois.App
             };
             DoTest(gtld);
 
+            var ip4 = new string[]
+            {
+                "198.17.79.5",
+                "0.0.1.1",
+                "1.0.1.1",
+            };
+            DoTest(ip4);
+
 
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();

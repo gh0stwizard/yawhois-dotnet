@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaWhois", "YaWhois\YaWhois.csproj", "{7985FE49-D597-497F-839E-7767B431DCBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YaWhois.App", "YaWhois.App\YaWhois.App.csproj", "{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaWhois.App", "YaWhois.App\YaWhois.App.csproj", "{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

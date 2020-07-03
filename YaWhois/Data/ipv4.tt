@@ -1,0 +1,318 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Runtime" #>
+<#@ assembly name="System.Numerics" #>
+<#@ assembly name="NetStandard" #>
+<#@ assembly name="$(NuGetPackageRoot)tinycsvparser\2.5.2\lib\netstandard2.0\TinyCsvParser.dll" #>
+<#@ assembly name="$(NuGetPackageRoot)\ipaddressrange\4.0.0\lib\netstandard1.4\IPAddressRange.dll" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.CodeDom.Compiler" #>
+<#@ import namespace="System.Net" #>
+<#@ import namespace="System.Numerics" #>
+<#@ import namespace="System.Net.Sockets" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="TinyCsvParser" #>
+<#@ import namespace="TinyCsvParser.Mapping" #>
+<#@ output extension=".cs" #>
+//
+// Auto-generated code. Don't edit.
+//
+
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+namespace YaWhois.Data
+{
+    public partial class Assignments
+    {
+        /// <summary>
+        /// Format: Network / Mask / Server.
+        /// </summary>
+        public static readonly Tuple<uint, uint, string>[] IPv4 = {
+<#
+        var ttdir = Path.GetDirectoryName(Host.TemplateFile);
+#>
+        //
+        // https://www.iana.org/assignments/ipv4-recovered-address-space/ipv4-recovered-address-space-2.csv
+        //
+<#
+        ParseIanaCsv(Path.Combine(ttdir, "ipv4-recovered-address-space-2.csv"));
+#>
+        //
+        // http://www.iana.org/assignments/ipv4-address-space
+        //
+<#
+        ParseFile(Path.Combine(ttdir, "ipv4.txt"));
+#>
+        };
+    }
+}
+
+<#+
+void ParseFile(string fileName)
+{
+        var lines = File.ReadLines(fileName);
+        var re1 = new Regex("^([\\d\\.]+)\\/(\\d+)\\s+([\\w\\.]+)$");
+        int linenum = 0;
+        foreach (var str in lines) {
+            linenum++;
+
+            var line = str;
+
+            // skip comments
+            if (Regex.IsMatch(line, "^\\s*#|^\\s*$")) continue;
+
+            // cleanup inline comments & spaces
+            line = Regex.Replace(line, "#.*$", "").Trim();
+
+            var m1 = re1.Match(line);
+
+            if (!m1.Success) {
+                var msg = string.Format("Invalid format in line \"{0}\"", line);
+                this.Host.LogErrors(new CompilerErrorCollection()
+                    { new CompilerError(fileName,
+                        linenum, 0, "0", // Line, column, error ID.
+                        msg)
+                    }
+                );
+                continue;
+            }
+
+            var parts = m1.Groups[1].Value.Split(new char[] { '.' }).Select(a => uint.Parse(a)).ToArray();
+            var server = m1.Groups[3].Value;
+            var net = (parts[0] << 24) + (parts[1] << 16) + (parts[2] << 8) + parts[3];
+            var mask = (~(0xffffffff >> int.Parse(m1.Groups[2].Value))) & 0xffffffff;
+
+            if (server == "UNKNOWN")
+                server = "\\x05";
+            else if (server == "UNALLOCATED")
+                server = "\\x06";
+            else if (!server.Contains('.'))
+                server = "whois." + server + ".net";
+#>
+            // <#= m1.Groups[1].Value #>/<#= m1.Groups[2].Value #>
+            Tuple.Create(<#= net #>U, <#= mask #>U, "<#= server #>"),
+<#+
+        }
+}
+#>
+
+<#+
+private class Recovered
+{
+    public string Start { get; set; }
+    public string End { get; set; }
+    public string Designation { get; set; }
+    public string WhoisServer { get; set; }
+    public string Status { get; set; }
+}
+
+private class RecoveredMapping : CsvMapping<Recovered>
+{
+    public RecoveredMapping()
+        : base()
+    {
+        MapProperty(0, a => a.Start);
+        MapProperty(1, a => a.End);
+        MapProperty(2, a => a.Designation);
+        MapProperty(4, a => a.WhoisServer);
+        MapProperty(5, a => a.Status);
+    }
+}
+
+void ParseIanaCsv(string fileName)
+{
+    var csvParserOptions = new CsvParserOptions(true, ',');
+    var csvMapper = new RecoveredMapping();
+    var csvParser = new CsvParser<Recovered>(csvParserOptions, csvMapper);
+    var result = csvParser
+        .ReadFromFile(fileName, Encoding.ASCII)
+        .ToList();
+
+    foreach (var row in result) {
+        var IpStart = IPAddress.Parse(row.Result.Start);
+        var IpEnd = IPAddress.Parse(row.Result.End);
+        var cidrRanges = CIDR.split(IpStart, IpEnd);
+        var server = row.Result.WhoisServer;
+#>
+            // <#= row.Result.Start #> - <#= row.Result.End #>
+<#+
+        foreach (var net in cidrRanges) {
+            var mask = (~(0xffffffff >> (int)net.NetworkLength)) & 0xffffffff;
+#>
+            Tuple.Create(<#= net.Address #>U, <#= mask #>U, "<#= server #>"),
+<#+
+        }
+    }
+}
+#>
+
+<#+
+    //
+    // https://stackoverflow.com/a/16263105
+    //
+    public struct CIDR
+    {
+        public CIDR(IPAddress address, uint network_length)
+        {
+            NetworkAddress = address;
+            NetworkLength = network_length;
+            AddressBits = AddressFamilyBits(address.AddressFamily);
+            if (network_length > AddressBits)
+            {
+                throw new ArgumentException("Invalid network length " + network_length + " for " + address.AddressFamily);
+            }
+        }
+
+        public IPAddress NetworkAddress { get; }
+        public IPAddress LastAddress
+        {
+            get { return IPAddressAdd(NetworkAddress, (new BigInteger(1) << (int)HostLength) - 1); }
+        }
+        public uint NetworkLength { get; }
+        public uint AddressBits { get; }
+        public uint HostLength
+        {
+            get { return AddressBits - NetworkLength; }
+        }
+
+        override public string ToString()
+        {
+            return NetworkAddress.ToString() + "/" + NetworkLength.ToString();
+        }
+
+        public string ToShortString()
+        {
+            if (NetworkLength == AddressBits) return NetworkAddress.ToString();
+            return NetworkAddress.ToString() + "/" + NetworkLength.ToString();
+        }
+
+        /* static helpers */
+        public static IPAddress IPAddressAdd(IPAddress address, BigInteger i)
+        {
+            return IPFromUnsigned(IPToUnsigned(address) + i, address.AddressFamily);
+        }
+
+        public static uint AddressFamilyBits(AddressFamily family)
+        {
+            switch (family)
+            {
+                case AddressFamily.InterNetwork:
+                    return 32;
+                case AddressFamily.InterNetworkV6:
+                    return 128;
+                default:
+                    throw new ArgumentException("Invalid address family " + family);
+            }
+        }
+
+        private static BigInteger IPToUnsigned(IPAddress addr)
+        {
+            /* Need to reverse addr bytes for BigInteger; prefix with 0 byte to force unsigned BigInteger
+             * read BigInteger bytes as: bytes[n] bytes[n-1] ... bytes[0], address is bytes[0] bytes[1] .. bytes[n] */
+            byte[] b = addr.GetAddressBytes();
+            byte[] unsigned = new byte[b.Length + 1];
+            for (int i = 0; i < b.Length; ++i)
+            {
+                unsigned[i] = b[(b.Length - 1) - i];
+            }
+            unsigned[b.Length] = 0;
+            return new BigInteger(unsigned);
+        }
+
+        private static byte[] GetUnsignedBytes(BigInteger unsigned, uint bytes)
+        {
+            /* reverse bytes again. check that now higher bytes are actually used */
+            if (unsigned.Sign < 0) throw new ArgumentException("argument must be >= 0");
+            byte[] data = unsigned.ToByteArray();
+            byte[] result = new byte[bytes];
+            for (int i = 0; i < bytes && i < data.Length; ++i)
+            {
+                result[bytes - 1 - i] = data[i];
+            }
+            for (uint i = bytes; i < data.Length; ++i)
+            {
+                if (data[i] != 0) throw new ArgumentException("argument doesn't fit in requested number of bytes");
+            }
+            return result;
+        }
+
+        private static IPAddress IPFromUnsigned(BigInteger unsigned, AddressFamily family)
+        {
+            /* IPAddress(byte[]) constructor picks family from array size */
+            switch (family)
+            {
+                case AddressFamily.InterNetwork:
+                    return new IPAddress(GetUnsignedBytes(unsigned, 4));
+                case AddressFamily.InterNetworkV6:
+                    return new IPAddress(GetUnsignedBytes(unsigned, 16));
+                default:
+                    throw new ArgumentException("AddressFamily " + family.ToString() + " not supported");
+            }
+        }
+
+        /* splits set [first..last] of unsigned integers into disjoint slices { x,..., x + 2^k - 1 | x mod 2^k == 0 }
+         *  covering exaclty the given set.
+         * yields the slices ordered by x as tuples (x, k)
+         * This code relies on the fact that BigInteger can't overflow; temporary results may need more bits than last is using.
+         */
+        public static IEnumerable<Tuple<BigInteger, uint>> split(BigInteger first, BigInteger last)
+        {
+            if (first > last) yield break;
+            if (first < 0) throw new ArgumentException();
+            last += 1;
+            /* mask == 1 << len */
+            BigInteger mask = 1;
+            uint len = 0;
+            while (first + mask <= last)
+            {
+                if ((first & mask) != 0)
+                {
+                    yield return new Tuple<BigInteger, uint>(first, len);
+                    first += mask;
+                }
+                mask <<= 1;
+                ++len;
+            }
+            while (first < last)
+            {
+                mask >>= 1;
+                --len;
+                if ((last & mask) != 0)
+                {
+                    yield return new Tuple<BigInteger, uint>(first, len);
+                    first += mask;
+                }
+            }
+        }
+
+        public static IEnumerable<CIDR> split(IPAddress first, IPAddress last)
+        {
+            if (first.AddressFamily != last.AddressFamily)
+            {
+                throw new ArgumentException("AddressFamilies don't match");
+            }
+            AddressFamily family = first.AddressFamily;
+            uint bits = AddressFamilyBits(family); /* split on numbers returns host length, CIDR takes network length */
+            foreach (Tuple<BigInteger, uint> slice in split(IPToUnsigned(first), IPToUnsigned(last)))
+            {
+                yield return new CIDR(IPFromUnsigned(slice.Item1, family), bits - slice.Item2);
+            }
+        }
+
+
+        public uint Address
+        {
+            get
+            {
+                byte[] bytes = NetworkAddress.GetAddressBytes();
+                if (BitConverter.IsLittleEndian) Array.Reverse(bytes);
+                return BitConverter.ToUInt32(bytes, 0);
+            }
+        }
+    }
+#>
