@@ -60,6 +60,12 @@ namespace YaWhois.App
             };
             DoTest(ip4);
 
+            var nic = new string[]
+            {
+                "net-ARIN",
+            };
+            DoTest(nic);
+
 
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();

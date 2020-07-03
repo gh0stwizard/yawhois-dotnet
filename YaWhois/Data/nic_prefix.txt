@@ -1,0 +1,13 @@
+﻿net-    whois.arin.net
+netblk- whois.arin.net
+poem-   whois.ripe.net
+form-   whois.ripe.net
+pgpkey- whois.ripe.net
+denic-  whois.denic.de
+
+# RPSL objects
+as-     whois.ripe.net
+rs-     whois.ripe.net
+rtrs-   whois.ripe.net
+fltr-   whois.ripe.net
+prng-   whois.ripe.net

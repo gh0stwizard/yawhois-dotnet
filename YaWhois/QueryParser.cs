@@ -62,26 +62,8 @@ namespace YaWhois
             }
 
             // IPv4
-            if (TryParseIP(str, out uint ip))
-            {
-                var assign = Assignments.IPv4
-                    .Where(a => (ip & a.Item2) == a.Item1)
-                    .FirstOrDefault();
-
-                if (assign != null)
-                {
-                    switch (assign.Item3[0])
-                    {
-                        case '\x05':
-                            throw new NoServerException();
-
-                        default:
-                            return assign.Item3;
-                    }
-                }
-
-                throw new NoServerException();
-            }
+            if (TryParseIPv4(str, out uint ip))
+                return FindIPv4(ip);
 
             // TLD
             var tld_result = FindByTLD(str);
@@ -94,6 +76,24 @@ namespace YaWhois
                 return gtld_result;
 
             // no dot but hyphen -> NIC
+            if (!str.Contains('.'))
+            {
+                var nicPrefix = Assignments.NicHandlePrefixes
+                    .Where(a => str.StartsWith(a.Key))
+                    .FirstOrDefault();
+
+                if (nicPrefix.Key != null)
+                    return nicPrefix.Value;
+
+                var nicSuffix = Assignments.NicHandleSuffixes
+                    .Where(a => str.EndsWith(a.Key))
+                    .FirstOrDefault();
+
+                if (nicSuffix.Key != null)
+                    return nicSuffix.Value;
+
+                return "whois.arin.net";
+            }
 
             // done
             throw new NoServerException();
@@ -119,7 +119,10 @@ namespace YaWhois
             {
                 case '\x0A':
                     var ipv4 = Convert6to4(s);
-                    return ParseIPv4(ipv4);
+                    if (TryParseIPv4(ipv4, out uint ip))
+                        return FindIPv4(ip);
+                    else
+                        throw new NoServerException();
 
                 case '\x0B':
                     var t = ConvertTeredo(s);
@@ -164,9 +167,25 @@ namespace YaWhois
         }
 
 
-        static string ParseIPv4(string s)
+        static string FindIPv4(uint ip)
         {
-            throw new NotImplementedException();
+            var assign = Assignments.IPv4
+                .Where(a => (ip & a.Item2) == a.Item1)
+                .FirstOrDefault();
+
+            if (assign != null)
+            {
+                switch (assign.Item3[0])
+                {
+                    case '\x05':
+                        throw new NoServerException();
+
+                    default:
+                        return assign.Item3;
+                }
+            }
+
+            throw new NoServerException();
         }
 
 
@@ -293,7 +312,7 @@ namespace YaWhois
         }
 
 
-        static bool TryParseIP(string s, out uint ip)
+        static bool TryParseIPv4(string s, out uint ip)
         {
             ip = 0;
             var r = new Regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\/?");

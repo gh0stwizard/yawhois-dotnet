@@ -33,6 +33,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ipv6.tt</DependentUpon>
     </None>
+    <None Include="Data\nic.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>nic.tt</DependentUpon>
+    </None>
     <None Include="Data\tld.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -66,6 +71,10 @@
     <None Update="Data\ipv6.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ipv6.cs</LastGenOutput>
+    </None>
+    <None Update="Data\nic.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>nic.cs</LastGenOutput>
     </None>
     <None Update="Data\tld.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -102,6 +111,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ipv6.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Data\nic.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>nic.tt</DependentUpon>
     </Compile>
     <Compile Update="Data\tld.cs">
       <DesignTime>True</DesignTime>
