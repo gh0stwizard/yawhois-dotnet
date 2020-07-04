@@ -7,92 +7,116 @@ using YaWhois.Data;
 
 namespace YaWhois
 {
-    public static class QueryParser
+    public class QueryParser
     {
-        public static string GuessServer(string query)
+        public string Query { get; internal set; }
+        public string Server { get; internal set; }
+
+
+        public QueryParser GuessServer(string s)
         {
-            if (string.IsNullOrWhiteSpace(query))
+            if (string.IsNullOrWhiteSpace(s))
                 throw new ArgumentException("Empty query.");
 
-            var str = Punycode.ToAscii(query.Trim().TrimEnd(new char[] { '.' }));
+            Query = Punycode.ToAscii(s.Trim().TrimEnd(new char[] { '.' }));
+            Server = null;
 
             // IPv6 address
-            if (str.Contains(':'))
+            if (Query.Contains(':'))
             {
                 // RPSL hierarchical objects
-                if (str.StartsWith("as", StringComparison.InvariantCultureIgnoreCase))
-                    return FindAS(stdlib.strtoul(str.Substring(2), 10));
+                if (Query.StartsWith("as", StringComparison.InvariantCultureIgnoreCase))
+                    return FindAS(stdlib.strtoul(s.Substring(2), 10));
 
-                return ParseIPv6(str);
+                return ParseIPv6(Query);
             }
 
             // email
-            if (str.Contains('@'))
+            if (Query.Contains('@'))
                 throw new NoServerException();
 
             // TLD domains -> try find, but don't throw error yet
-            if (!str.Contains('.'))
+            if (!Query.Contains('.'))
             {
                 /* if it is a TLD or a new gTLD then ask IANA */
-                var low = str.ToLowerInvariant();
+                var low = Query.ToLowerInvariant();
                 var tld = Assignments.TLD.FirstOrDefault(a => a.Item1 == low);
 
-                if (tld != null || Assignments.GTLD.Any(a => a == str))
-                    return "whois.iana.org";
+                if (tld != null || Assignments.GTLD.Any(a => a == Query))
+                {
+                    Server = "whois.iana.org";
+                    return this;
+                }
             }
 
             // no dot and no hyphen means it's a NSI NIC handle or ASN (?)
-            if (!(str.Contains('.') || str.Contains('-')))
+            if (!(Query.Contains('.') || Query.Contains('-')))
             {
-                if (Regex.IsMatch(str, "^as[0-9a-zA-Z\\ ]", RegexOptions.IgnoreCase))
-                    return FindAS(stdlib.strtoul(str.Substring(2), 10));
+                if (Regex.IsMatch(Query, "^as[0-9a-zA-Z\\ ]", RegexOptions.IgnoreCase))
+                    return FindAS(stdlib.strtoul(Query.Substring(2), 10));
 
-                if (str[0] == '!') /* NSI NIC handle */
-                    return "whois.networksolutions.com";
-                else
-                    throw new NoServerException();
+                if (Query[0] == '!') /* NSI NIC handle */
+                {
+                    Server = "whois.networksolutions.com";
+                    return this;
+                }
+
+                throw new NoServerException();
             }
 
             // ASN32
-            if (str.StartsWith("as", StringComparison.InvariantCultureIgnoreCase)
-                && str.Length >= 3
-                && TryParseASN32(str.Substring(2), out uint asn32))
+            if (Query.StartsWith("as", StringComparison.InvariantCultureIgnoreCase)
+                && Query.Length >= 3
+                && TryParseASN32(Query.Substring(2), out uint asn32))
             {
                 return FindAS32(asn32);
             }
 
             // IPv4
-            if (TryParseIPv4(str, out uint ip))
+            if (TryParseIPv4(Query, out uint ip))
                 return FindIPv4(ip);
 
             // TLD
-            var tld_result = FindByTLD(str);
+            var tld_result = FindByTLD(Query);
             if (tld_result != null)
-                return tld_result;
+            {
+                Server = tld_result;
+                return this;
+            }
 
             // new gTLD, e.g. they have whois.nic.[TLD]
-            var gtld_result = FindByNewTLD(str);
+            var gtld_result = FindByNewTLD(Query);
             if (gtld_result != null)
-                return gtld_result;
+            {
+                Server = gtld_result;
+                return this;
+            }
 
             // no dot but hyphen -> NIC
-            if (!str.Contains('.'))
+            if (!Query.Contains('.'))
             {
                 var nicPrefix = Assignments.NicHandlePrefixes
-                    .Where(a => str.StartsWith(a.Key))
+                    .Where(a => Query.StartsWith(a.Key))
                     .FirstOrDefault();
 
                 if (nicPrefix.Key != null)
-                    return nicPrefix.Value;
+                {
+                    Server = nicPrefix.Value;
+                    return this;
+                }
 
                 var nicSuffix = Assignments.NicHandleSuffixes
-                    .Where(a => str.EndsWith(a.Key))
+                    .Where(a => Query.EndsWith(a.Key))
                     .FirstOrDefault();
 
                 if (nicSuffix.Key != null)
-                    return nicSuffix.Value;
+                {
+                    Server = nicSuffix.Value;
+                    return this;
+                }
 
-                return "whois.arin.net";
+                Server = "whois.arin.net";
+                return this;
             }
 
             // done
@@ -100,7 +124,7 @@ namespace YaWhois
         }
 
 
-        static string ParseIPv6(string s)
+        QueryParser ParseIPv6(string s)
         {
             var p1 = stdlib.strtoul(s, 16);
 
@@ -118,15 +142,15 @@ namespace YaWhois
             switch (assign.Item3[0])
             {
                 case '\x0A':
-                    var ipv4 = Convert6to4(s);
-                    if (TryParseIPv4(ipv4, out uint ip))
+                    Query = Convert6to4(s);
+                    if (TryParseIPv4(Query, out uint ip))
                         return FindIPv4(ip);
                     else
                         throw new NoServerException();
 
                 case '\x0B':
-                    var ip4teredo = ConvertTeredo(s);
-                    if (TryParseIPv4(ip4teredo, out uint teredoIp))
+                    Query = ConvertTeredo(s);
+                    if (TryParseIPv4(Query, out uint teredoIp))
                         return FindIPv4(teredoIp);
                     else
                         throw new NoServerException();
@@ -135,8 +159,67 @@ namespace YaWhois
                     throw new UnknownNetworkException();
 
                 default:
-                    return assign.Item3;
+                    Server = assign.Item3;
+                    return this;
             }
+        }
+
+
+        QueryParser FindIPv4(uint ip)
+        {
+            var assign = Assignments.IPv4
+                .Where(a => (ip & a.Item2) == a.Item1)
+                .FirstOrDefault();
+
+            if (assign != null)
+            {
+                switch (assign.Item3[0])
+                {
+                    case '\x05':
+                        throw new NoServerException();
+
+                    default:
+                        Server = assign.Item3;
+                        return this;
+                }
+            }
+
+            throw new NoServerException();
+        }
+
+
+        QueryParser FindAS(uint asn)
+        {
+            if (asn > 65535)
+                return FindAS32(asn);
+
+            var assing = Assignments.AS16
+                .Where(a => asn >= a.Item1 && asn <= a.Item2)
+                .FirstOrDefault();
+
+            if (assing != null)
+            {
+                Server = assing.Item3;
+                return this;
+            }
+
+            throw new UnknownNetworkException();
+        }
+
+
+        QueryParser FindAS32(uint asn)
+        {
+            var assing = Assignments.AS32
+                .Where(a => asn >= a.Item1 && asn <= a.Item2)
+                .FirstOrDefault();
+
+            if (assing != null)
+            {
+                Server = assing.Item3;
+                return this;
+            }
+
+            throw new UnknownNetworkException();
         }
 
 
@@ -167,63 +250,6 @@ namespace YaWhois
             b = Convert.ToUInt32(m.Groups[3].Value, 16) ^ 0xFFFF;
 
             return string.Format("{0}.{1}.{2}.{3}", a >> 8, a & 0xFF, b >> 8, b & 0xFF);
-        }
-
-
-        static string FindIPv4(uint ip)
-        {
-            var assign = Assignments.IPv4
-                .Where(a => (ip & a.Item2) == a.Item1)
-                .FirstOrDefault();
-
-            if (assign != null)
-            {
-                switch (assign.Item3[0])
-                {
-                    case '\x05':
-                        throw new NoServerException();
-
-                    default:
-                        return assign.Item3;
-                }
-            }
-
-            throw new NoServerException();
-        }
-
-
-        static string ParseTeredo(string s)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        static string FindAS(uint asn)
-        {
-            if (asn > 65535)
-                return FindAS32(asn);
-
-            var assing = Assignments.AS16
-                .Where(a => asn >= a.Item1 && asn <= a.Item2)
-                .FirstOrDefault();
-
-            if (assing != null)
-                return assing.Item3;
-
-            throw new UnknownNetworkException();
-        }
-
-
-        static string FindAS32(uint asn)
-        {
-            var assing = Assignments.AS32
-                .Where(a => asn >= a.Item1 && asn <= a.Item2)
-                .FirstOrDefault();
-
-            if (assing != null)
-                return assing.Item3;
-
-            throw new UnknownNetworkException();
         }
 
 

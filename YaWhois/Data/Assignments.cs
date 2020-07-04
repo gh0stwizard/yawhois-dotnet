@@ -6,12 +6,6 @@ namespace YaWhois.Data
 {
     public partial class Assignments
     {
-        public struct TldOptions
-        {
-            public Hints Hint;
-            public string Server;
-        }
-
         public enum Hints
         {
             NONE,

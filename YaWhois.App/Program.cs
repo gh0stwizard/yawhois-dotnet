@@ -21,7 +21,8 @@ namespace YaWhois.App
                 "as3.55",
                 "as32000",
                 "as65536",
-                "as65336"
+                "as65336",
+                "aS3356"
             };
             DoTest(asn);
 
@@ -81,12 +82,14 @@ namespace YaWhois.App
 
         static void DoTest(IEnumerable<string> list)
         {
+            var parser = new QueryParser();
+
             foreach (var el in list)
             {
                 try
                 {
-                    var s = QueryParser.GuessServer(el);
-                    Console.WriteLine($"{el} >>> {s}");
+                    var s = parser.GuessServer(el);
+                    Console.WriteLine($"{el} >>> {s.Server} :: {s.Query}");
                 }
                 catch (Exception e)
                 {
