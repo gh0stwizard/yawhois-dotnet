@@ -95,8 +95,9 @@ namespace YaWhois
             // no dot but hyphen -> NIC
             if (!Query.Contains('.'))
             {
+                var low = Query.ToLowerInvariant();
                 var nicPrefix = Assignments.NicHandlePrefixes
-                    .Where(a => Query.StartsWith(a.Key))
+                    .Where(a => low.StartsWith(a.Key))
                     .FirstOrDefault();
 
                 if (nicPrefix.Key != null)
@@ -106,7 +107,7 @@ namespace YaWhois
                 }
 
                 var nicSuffix = Assignments.NicHandleSuffixes
-                    .Where(a => Query.EndsWith(a.Key))
+                    .Where(a => low.EndsWith(a.Key))
                     .FirstOrDefault();
 
                 if (nicSuffix.Key != null)

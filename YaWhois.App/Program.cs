@@ -63,7 +63,8 @@ namespace YaWhois.App
 
             var nic = new string[]
             {
-                "net-ARIN",
+                "CREW-RIPE",
+                "RIPE-NCC-HM-MNT"
             };
             DoTest(nic);
 
