@@ -112,18 +112,18 @@ namespace YaWhois.Utils
                 {
                     f.Position--;
                     f.Seek(0, SeekOrigin.Begin);
-                    //errno = EINVAL;
+                    throw new ArgumentException();
                     return 0;
                 }
             }
 
             if (@base == 10)
             {
-                for (x = 0; c - '0' < 10u && x < uint.MaxValue / 10 - 1; c = (byte)f.ReadByte())
+                for (x = 0; ((uint)c - '0') < 10u && x < uint.MaxValue / 10 - 1; c = (byte)f.ReadByte())
                     x = x * 10 + c - '0';
-                for (y = x; c - '0' < 10u && y < ulong.MaxValue / 10 && 10 * y <= ulong.MaxValue - (uint)(c - '0'); c = (byte)f.ReadByte())
+                for (y = x; ((uint)c - '0') < 10u && y < ulong.MaxValue / 10 && 10 * y <= ulong.MaxValue - (uint)(c - '0'); c = (byte)f.ReadByte())
                     y = y * 10 + c - '0';
-                if (c - '0' >= 10u) goto done;
+                if (((uint)c - '0') >= 10u) goto done;
             }
             else if ((@base & (@base - 1)) > 0)
             {
@@ -144,7 +144,7 @@ namespace YaWhois.Utils
             if (table[c] < @base)
             {
                 for (; table[c] < @base; c = (byte)f.ReadByte()) ;
-                //errno = ERANGE;
+                throw new Exception("Result too large.");
                 y = lim;
                 if ((lim & 1) > 0) neg = 0;
             }
@@ -155,12 +155,12 @@ namespace YaWhois.Utils
             {
                 if ((lim & 1) == 0 && neg != 0)
                 {
-                    //errno = ERANGE;
+                    throw new Exception("Result too large.");
                     return lim - 1;
                 }
                 else if (y > lim)
                 {
-                    //errno = ERANGE;
+                    throw new Exception("Result too large.");
                     return lim;
                 }
             }
@@ -188,6 +188,10 @@ namespace YaWhois.Utils
             using (var stream = new MemoryStream(bytes))
             {
                 var y = intscan(stream, (uint)@base, 1, lim);
+                // XXX: currently it used for the case "string[index]", which are unicode strings in C#.
+                // But in the app these strings contain only ASCII and this "hack" is working.
+                // Correct implementation should consider that 'end' value points to
+                // a character position and not to a byte position.
                 end = stream.Position;
                 return y;
             }
