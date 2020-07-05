@@ -11,6 +11,15 @@ namespace YaWhois
     {
         public string Query { get; internal set; }
         public string Server { get; internal set; }
+        public ServerHints ServerHint { get; internal set; }
+
+
+        public enum ServerHints
+        {
+            NONE,
+            CRSNIC,
+            AFILIAS
+        }
 
 
         public QueryParser GuessServer(string s)
@@ -77,12 +86,8 @@ namespace YaWhois
                 return FindIPv4(ip);
 
             // TLD
-            var tld_result = FindByTLD(Query);
-            if (tld_result != null)
-            {
-                Server = tld_result;
+            if (IsTLD(Query))
                 return this;
-            }
 
             // new gTLD, e.g. they have whois.nic.[TLD]
             var gtld_result = FindByNewTLD(Query);
@@ -286,14 +291,14 @@ namespace YaWhois
         }
 
 
-        static string FindByTLD(string fqdn, bool throwError = false)
+        bool IsTLD(string fqdn, bool throwError = false)
         {
             var dom = fqdn.ToLowerInvariant();
             var domlen = dom.Length;
             var tld_result = Assignments.TLD
-                .Where(a => domlen >= a.Item1.Length - 1) // dot + tld
-                .Where(a => dom.EndsWith(a.Item1))
+                .Where(a => a.Item1.Length <= domlen - 1) // dot + tld
                 .Where(a => dom[domlen - a.Item1.Length - 1] == '.')
+                .Where(a => dom.EndsWith(a.Item1))
                 .FirstOrDefault();
 
             if (tld_result != null)
@@ -307,18 +312,31 @@ namespace YaWhois
                         throw new NoServerException();
 
                     case Assignments.Hints.IPv4:
+                        var ip4str = ConvertInArpa(Query);
+                        TryParseIPv4(ip4str, out uint ip4);
+                        FindIPv4(ip4);
+                        return true;
+
                     case Assignments.Hints.IPv6:
-                        throw new NotImplementedException();
+                        var ip6str = ConvertInArpa6(Query);
+                        ParseIPv6(ip6str);
+                        return true;
+
+                    case Assignments.Hints.AFILIAS:
+                        Server = tld_result.Item3;
+                        ServerHint = ServerHints.AFILIAS;
+                        return true;
 
                     default:
-                        return tld_result.Item3;
+                        Server = tld_result.Item3;
+                        return true;
                 }
             }
 
             if (throwError)
                 throw new NoServerException();
 
-            return null;
+            return false;
         }
 
 
@@ -345,10 +363,10 @@ namespace YaWhois
         static bool TryParseIPv4(string s, out uint ip)
         {
             ip = 0;
-            var r = new Regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\/?");
+            var r = new Regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(.)?");
             var m = r.Match(s);
 
-            if (!m.Success)
+            if (!m.Success || (m.Groups[5].Success && m.Groups[5].Value != "/"))
                 return false;
 
             for (var i = 1; i <= 4; i++)
@@ -360,6 +378,53 @@ namespace YaWhois
             }
 
             return true;
+        }
+
+
+        static string ConvertInArpa(string str)
+        {
+            if (!Regex.IsMatch(str, "^(\\d{1,3}\\.){1,3}in-addr\\.arpa$"))
+                return "0.0.0.0";
+
+            long[] abc = new long[] { 0, 0, 0 };
+            var s = str;
+            for (var i = 0; i < abc.Length; i++) {
+                if (i >= 4)
+                    return "0.0.0.0";
+
+                // XXX: end is a byte position, but used as a character ones.
+                var oct = stdlib.strtol(s, out long end, 10);
+                if (oct < 0 || oct > 255 || s[(int)end] != '.')
+                    return "0.0.0.0";
+
+                abc[i] = oct;
+                s = s.Substring((int)end + 1);
+            }
+
+            return string.Join(".", abc.Reverse()) + ".0";
+        }
+
+
+        static string ConvertInArpa6(string str)
+        {
+            var low = str.ToLowerInvariant();
+
+            if (!Regex.IsMatch(low, "^([0-9a-f]\\.){1,39}ip6\\.arpa$"))
+                return "";
+
+            var nibbles = low.Split(new char[] { '.' }).Reverse().ToList();
+            nibbles.RemoveRange(0, 2);
+
+            var result = "";
+            for (int i = 0, digits = 1; i < nibbles.Count && i < 40; i++)
+            {
+                result += nibbles[i];
+
+                if (digits < 32 && (digits++ % 4) == 0)
+                    result += ":";
+            }
+
+            return result;
         }
 
 

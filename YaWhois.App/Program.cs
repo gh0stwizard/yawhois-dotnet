@@ -43,7 +43,9 @@ namespace YaWhois.App
                 "central.no.com",
                 "casual.com",
                 "испытание.рф",
-                ".рф"
+                ".рф",
+                "ibm.com",
+                "test.bz"
             };
             DoTest(tld);
 
@@ -64,7 +66,8 @@ namespace YaWhois.App
             var nic = new string[]
             {
                 "CREW-RIPE",
-                "RIPE-NCC-HM-MNT"
+                "RIPE-NCC-HM-MNT",
+                "NET-148-59-244-0-1"
             };
             DoTest(nic);
 
@@ -74,6 +77,17 @@ namespace YaWhois.App
                 "2001:0000:4136:e378:8000:63bf:3fff:fdd2",
             };
             DoTest(teredo);
+
+            var arpa = new string[]
+            {
+                "in-addr.arpa",
+                "ip6.arpa",
+                "1.10.78.in-addr.arpa",
+                "0.10.78.in-addr.arpa",
+                "0.0.10.78.in-addr.arpa",
+                "b.a.9.8.7.6.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa"
+            };
+            DoTest(arpa);
 
 
             Console.WriteLine("Press any key to continue...");
