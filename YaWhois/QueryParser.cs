@@ -134,7 +134,7 @@ namespace YaWhois
         {
             var p1 = stdlib.strtoul(s, 16);
 
-            if (p1 == 0)
+            if (p1 == 0 || !s.Contains(':'))
                 throw new NoServerException();
 
             var net = (p1 << 16) + stdlib.strtoul(s.Substring(s.IndexOf(':') + 1), 16);
@@ -420,9 +420,12 @@ namespace YaWhois
             {
                 result += nibbles[i];
 
-                if (digits < 32 && (digits++ % 4) == 0)
+                if ((digits++ % 4) == 0)
                     result += ":";
             }
+
+            if (result.Last() == ':')
+                return result.Remove(result.Length - 1);
 
             return result;
         }
