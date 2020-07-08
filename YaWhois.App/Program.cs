@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace YaWhois.App
 {
@@ -22,7 +24,9 @@ namespace YaWhois.App
                 "as32000",
                 "as65536",
                 "as65336",
-                "aS3356"
+                "aS3356",   //Query string: "a 3356"
+                "as63779",  //Query string: "-V Md5.5.6 as63779"
+                "as131951", //Query string: "AS 131951/e"
             };
             DoTest(asn);
 
@@ -31,7 +35,8 @@ namespace YaWhois.App
             {
                 "in",
                 "im",
-                "pro"
+                "pro",
+                "de"
             };
             DoTest(puretld);
 
@@ -45,7 +50,9 @@ namespace YaWhois.App
                 "испытание.рф",
                 ".рф",
                 "ibm.com",
-                "test.bz"
+                "test.bz",
+                "mail.de",
+                "dk-hostmaster.dk"
             };
             DoTest(tld);
 
@@ -59,7 +66,7 @@ namespace YaWhois.App
             {
                 "198.17.79.5",
                 "0.0.1.1",
-                "1.0.1.1",
+                "1.0.1.1",      // Query string: "-V Md5.5.6 1.0.1.1"
             };
             DoTest(ip4);
 
@@ -105,13 +112,26 @@ namespace YaWhois.App
                 try
                 {
                     var s = parser.GuessServer(el);
-                    Console.WriteLine($"{el} >>> {s.Server} :: {s.Query}");
+                    Console.WriteLine($"{el} >>> {s.Query}");
+                    Console.WriteLine($"    server: {s.Server}");
+
+                    s.FormatQuery();
+
+                    Console.WriteLine($"    server query: {s.ServerQuery}");
+
+                    if (s.ServerEncoding != null)
+                        Console.WriteLine($"    encoding: {s.ServerEncoding.WebName}");
+                    if (!string.IsNullOrEmpty(s.EncodingParameter))
+                        Console.WriteLine($"    options: {s.EncodingParameter}");
+
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine($"{el} ERROR: {e.Message}");
                 }
             }
+
+            Console.WriteLine(new string('-', 72));
         }
     }
 }

@@ -4,21 +4,47 @@ using System.Text.RegularExpressions;
 using Nunycode;
 using YaWhois.Utils;
 using YaWhois.Data;
+using System.Text;
 
 namespace YaWhois
 {
     public class QueryParser
     {
+        /// <summary>
+        /// Normalized query request.
+        /// </summary>
         public string Query { get; internal set; }
+        /// <summary>
+        /// Selected server for Query.
+        /// </summary>
         public string Server { get; internal set; }
+        /// <summary>
+        /// Set of server hints.
+        /// </summary>
         public ServerHints ServerHint { get; internal set; }
+
+        #region FormatQuery fields
+        /// <summary>
+        /// A query which will be passed to a server.
+        /// </summary>
+        public string ServerQuery { get; internal set; }
+        public Encoding ServerEncoding { get; internal set; }
+        /// <summary>
+        /// Optional encoding parameters for ServerQuery.
+        /// </summary>
+        public string EncodingParameter { get; internal set; }
+        #endregion
 
 
         public enum ServerHints
         {
-            NONE,
-            CRSNIC,
-            AFILIAS
+            NONE = 0,
+            GTLD = 1,
+            CRSNIC = 2,
+            AFILIAS = 4,
+            RIPE = 8,
+            QUERY_AS = 16,
+            QUERY_IP = 32
         }
 
 
@@ -29,6 +55,9 @@ namespace YaWhois
 
             Query = Punycode.ToAscii(s.Trim().TrimEnd(new char[] { '.' }));
             Server = null;
+            ServerEncoding = null;
+            ServerHint = ServerHints.NONE;
+            EncodingParameter = null;
 
             // IPv6 address
             if (Query.Contains(':'))
@@ -94,6 +123,7 @@ namespace YaWhois
             if (gtld_result != null)
             {
                 Server = gtld_result;
+                ServerHint |= ServerHints.GTLD;
                 return this;
             }
 
@@ -130,6 +160,65 @@ namespace YaWhois
         }
 
 
+        public QueryParser FormatQuery()
+        {
+            if (string.IsNullOrEmpty(Server))
+                throw new ArgumentNullException(Server);
+
+            if (Assignments.RipeServers.Contains(Server))
+            {
+                ServerHint |= ServerHints.RIPE;
+            }
+
+            var encoding = Assignments.ServerEncodings
+                .FirstOrDefault(a => a.Item1 == Server);
+
+            if (encoding != null)
+            {
+                // According to docs:
+                // If the same encoding provider is used in multiple calls to the RegisterProvider method,
+                // only the first method call registers the provider. Subsequent calls are ignored.
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+                // TODO: Encoding.GetEncoding() is slow, the value must be cached.
+                ServerEncoding = Encoding.GetEncoding(encoding.Item2);
+                EncodingParameter = encoding.Item3;
+            }
+
+            if (Server == "whois.denic.de" && IsQueryDomain("de"))
+                ServerQuery = "-T dn,ace " + Query;
+            else if (Server == "whois.dk-hostmaster.dk" && IsQueryDomain("dk"))
+                ServerQuery = "--show-handles " + Query;
+
+            var isripe = ServerHint.HasFlag(ServerHints.RIPE);
+            var isasn = ServerHint.HasFlag(ServerHints.QUERY_AS);
+
+            if (!isripe && isasn && Server == "whois.nic.ad.jp")
+            {
+                ServerQuery = "AS " + Query.Substring(2);
+            }
+            else if (!isripe && Server == "whois.arin.net" && !Query.Contains(' '))
+            {
+                if (isasn)
+                    ServerQuery = "a " + Query.Substring(2);
+                else if (ServerHint.HasFlag(ServerHints.QUERY_IP))
+                    ServerQuery = "n + " + Query;
+                else
+                    ServerQuery = Query;
+            }
+            else
+            {
+                ServerQuery = Query;
+            }
+
+            // TODO: add japanese support by request.
+            if (!isripe && (Server == "whois.nic.ad.jp" || Server == "whois.jprs.jp"))
+                ServerQuery += "/e";
+
+            return this;
+        }
+
+
         QueryParser ParseIPv6(string s)
         {
             var p1 = stdlib.strtoul(s, 16);
@@ -144,6 +233,8 @@ namespace YaWhois
 
             if (assign == null)
                 throw new UnknownNetworkException();
+
+            ServerHint |= ServerHints.QUERY_IP;
 
             switch (assign.Item3[0])
             {
@@ -179,6 +270,8 @@ namespace YaWhois
 
             if (assign != null)
             {
+                ServerHint |= ServerHints.QUERY_IP;
+
                 switch (assign.Item3[0])
                 {
                     case '\x05':
@@ -206,6 +299,7 @@ namespace YaWhois
             if (assing != null)
             {
                 Server = assing.Item3;
+                ServerHint |= ServerHints.QUERY_AS;
                 return this;
             }
 
@@ -222,6 +316,7 @@ namespace YaWhois
             if (assing != null)
             {
                 Server = assing.Item3;
+                ServerHint |= ServerHints.QUERY_AS;
                 return this;
             }
 
@@ -324,7 +419,12 @@ namespace YaWhois
 
                     case Assignments.Hints.AFILIAS:
                         Server = tld_result.Item3;
-                        ServerHint = ServerHints.AFILIAS;
+                        ServerHint |= ServerHints.AFILIAS;
+                        return true;
+
+                    case Assignments.Hints.CSRNIC:
+                        Server = tld_result.Item3;
+                        ServerHint |= ServerHints.CRSNIC;
                         return true;
 
                     default:
@@ -339,6 +439,22 @@ namespace YaWhois
             return false;
         }
 
+
+        bool IsQueryDomain(string domain)
+        {
+            if (string.IsNullOrEmpty(Query) || string.IsNullOrEmpty(domain))
+                return false;
+
+            if (domain.Length >= Query.Length - 1)
+                return false;
+
+            var end = Query.Substring(Query.Length - domain.Length);
+
+            if (end == domain && end[0] != '.')
+                return true;
+
+            return false;
+        }
 
         static string FindByNewTLD(string fqdn, bool throwError = false)
         {

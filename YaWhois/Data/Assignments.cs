@@ -16,5 +16,22 @@ namespace YaWhois.Data
             IPv4, //x0c
             IPv6, //x0d
         }
+
+
+        public static readonly string[] RipeServers =
+        {
+            "whois.ripe.net",
+            "whois.apnic.net",
+            "whois.afrinic.net",
+            "rr.arin.net",
+            "whois.nic.fr",
+            "rr.level3.net",
+            "rr.ntt.net",
+            "whois.tcinet.ru",
+            "whois.ripn.net",
+            "whois.arnes.si",
+            "whois.nic.ir",
+            "whois.ra.net",
+        };
     }
 }
