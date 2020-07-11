@@ -29,10 +29,6 @@ namespace YaWhois
         /// </summary>
         public string ServerQuery { get; internal set; }
         public Encoding ServerEncoding { get; internal set; }
-        /// <summary>
-        /// Optional encoding parameters for ServerQuery.
-        /// </summary>
-        public string EncodingParameter { get; internal set; }
         #endregion
 
 
@@ -42,10 +38,19 @@ namespace YaWhois
             GTLD = 1,
             CRSNIC = 2,
             AFILIAS = 4,
-            RIPE = 8,
-            QUERY_AS = 16,
-            QUERY_IP = 32
+            IANA = 8,
+            RIPE = 16,
+            QUERY_AS = 32,
+            QUERY_IP = 64
         }
+
+
+#if RIPE_CLIENT_TAG
+        /// <summary>
+        /// RIPE servers client tag.
+        /// </summary>
+        public const string ClientTag = "Md5.5.6";
+#endif
 
 
         public QueryParser GuessServer(string s)
@@ -55,9 +60,9 @@ namespace YaWhois
 
             Query = Punycode.ToAscii(s.Trim().TrimEnd(new char[] { '.' }));
             Server = null;
-            ServerEncoding = null;
+            ServerQuery = string.Empty;
+            ServerEncoding = Encoding.ASCII;
             ServerHint = ServerHints.NONE;
-            EncodingParameter = null;
 
             // IPv6 address
             if (Query.Contains(':'))
@@ -83,6 +88,7 @@ namespace YaWhois
                 if (tld != null || Assignments.GTLD.Any(a => a == Query))
                 {
                     Server = "whois.iana.org";
+                    ServerHint |= ServerHints.IANA;
                     return this;
                 }
             }
@@ -168,6 +174,56 @@ namespace YaWhois
             if (Assignments.RipeServers.Contains(Server))
             {
                 ServerHint |= ServerHints.RIPE;
+                // XXX: Incorrect syntax???
+                // From https://www.ripe.net/manage-ips-and-asns/db/support/documentation/ripe-database-query-reference-manual#2-11-access-control-for-queries
+                // Syntax: -V <version>,<ipv4-address>
+                // where
+                //   <version> is a client tag that usually represents the software version that the proxy uses
+                //   <ipv4-address> is the IPv4 address of the client that queries the database using the proxy
+                //
+                // Not all users can use this “-V” flag. You must contact RIPE Database Administration
+                // and tell us why you need this facility. If we approve your request, we will add the IP address
+                // of the proxy server to an access control list. You can then use the “-V” flag,
+                // but only from your stated IP address.
+#if RIPE_CLIENT_TAG
+                ServerQuery = "-V " + ClientTag + " ";
+#endif
+            }
+
+            if (Server == "whois.denic.de" && IsQueryDomain("de"))
+            {
+                ServerQuery += "-T dn,ace " + Query;
+            }
+            else if (Server == "whois.dk-hostmaster.dk" && IsQueryDomain("dk"))
+            {
+                ServerQuery += "--show-handles " + Query;
+            }
+            else
+            {
+                var isripe = ServerHint.HasFlag(ServerHints.RIPE);
+                var isasn = ServerHint.HasFlag(ServerHints.QUERY_AS);
+
+                if (!isripe && isasn && Server == "whois.nic.ad.jp")
+                {
+                    ServerQuery = "AS " + Query.Substring(2);
+                }
+                else if (!isripe && Server == "whois.arin.net" && !Query.Contains(' '))
+                {
+                    if (isasn)
+                        ServerQuery = "a " + Query.Substring(2);
+                    else if (ServerHint.HasFlag(ServerHints.QUERY_IP))
+                        ServerQuery = "n + " + Query;
+                    else
+                        ServerQuery = Query;
+                }
+                else
+                {
+                    ServerQuery = Query;
+                }
+
+                // TODO: add japanese support by request.
+                if (!isripe && (Server == "whois.nic.ad.jp" || Server == "whois.jprs.jp"))
+                    ServerQuery += "/e";
             }
 
             var encoding = Assignments.ServerEncodings
@@ -182,38 +238,8 @@ namespace YaWhois
 
                 // TODO: Encoding.GetEncoding() is slow, the value must be cached.
                 ServerEncoding = Encoding.GetEncoding(encoding.Item2);
-                EncodingParameter = encoding.Item3;
+                ServerQuery = encoding.Item3 + " " + ServerQuery;
             }
-
-            if (Server == "whois.denic.de" && IsQueryDomain("de"))
-                ServerQuery = "-T dn,ace " + Query;
-            else if (Server == "whois.dk-hostmaster.dk" && IsQueryDomain("dk"))
-                ServerQuery = "--show-handles " + Query;
-
-            var isripe = ServerHint.HasFlag(ServerHints.RIPE);
-            var isasn = ServerHint.HasFlag(ServerHints.QUERY_AS);
-
-            if (!isripe && isasn && Server == "whois.nic.ad.jp")
-            {
-                ServerQuery = "AS " + Query.Substring(2);
-            }
-            else if (!isripe && Server == "whois.arin.net" && !Query.Contains(' '))
-            {
-                if (isasn)
-                    ServerQuery = "a " + Query.Substring(2);
-                else if (ServerHint.HasFlag(ServerHints.QUERY_IP))
-                    ServerQuery = "n + " + Query;
-                else
-                    ServerQuery = Query;
-            }
-            else
-            {
-                ServerQuery = Query;
-            }
-
-            // TODO: add japanese support by request.
-            if (!isripe && (Server == "whois.nic.ad.jp" || Server == "whois.jprs.jp"))
-                ServerQuery += "/e";
 
             return this;
         }
@@ -456,6 +482,7 @@ namespace YaWhois
             return false;
         }
 
+
         static string FindByNewTLD(string fqdn, bool throwError = false)
         {
             var dom = fqdn.ToLowerInvariant();
@@ -504,7 +531,8 @@ namespace YaWhois
 
             long[] abc = new long[] { 0, 0, 0 };
             var s = str;
-            for (var i = 0; i < abc.Length; i++) {
+            for (var i = 0; i < abc.Length; i++)
+            {
                 if (i >= 4)
                     return "0.0.0.0";
 
@@ -571,7 +599,7 @@ namespace YaWhois
         }
 
 
-        public class ExternalWhoisException: Exception
+        public class ExternalWhoisException : Exception
         {
             /// <summary>
             /// You can access the whois database at {source}.

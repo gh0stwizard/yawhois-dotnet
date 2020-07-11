@@ -1,13 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace YaWhois.App
 {
     class Program
     {
         static void Main(string[] args)
+        {
+
+            var ci = new CultureInfo("en-US");
+            Thread.CurrentThread.CurrentCulture = ci;
+            Thread.CurrentThread.CurrentUICulture = ci;
+            Console.OutputEncoding = Encoding.UTF8;
+
+
+            var whois = new YaWhoisClient();
+            whois.BeforeSendRequest += Whois_BeforeSendRequest;
+            //whois.BeforeParseResponse += Whois_BeforeParseResponse;
+            whois.ResponseParsed += Whois_ResponseParsed;
+
+            //whois.Query("in-addr.arpa");
+            //whois.Query("mail.ru", "whois.iana.org");
+            //whois.Query("dk-hostmaster.dk");
+
+            // TODO: create parser??
+            //whois.Query("mail.kr"); // restricted, no information
+            //whois.Query("한국인터넷정보센터.한국");
+
+            //whois.Query("1.0.0.1", "whois.iana.org");
+
+            //whois.Query("2001:0000:4136:e378:8000:63bf:3fff:fdd2", "whois.iana.org");
+            //whois.Query("2001:0000:4136:e378:8000:63bf:3fff:fdd2");
+
+            //whois.Query("mail.bz"); // afilias
+
+            //whois.Query("while.cc"); // crsnic
+
+            //whois.Query("1.0.0.1", "whois.arin.net");
+            //whois.Query("as3300", "whois.arin.net");
+
+
+            TestParser();
+        }
+
+        private static void Whois_ResponseParsed(object sender, YaWhoisClientEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.Referral))
+                Console.WriteLine("[refer: {0}]", e.Referral);
+
+            Console.WriteLine();
+            Console.WriteLine(e.Response);
+        }
+
+        private static void Whois_BeforeParseResponse(object sender, YaWhoisClientEventArgs e)
+        {
+            //Console.WriteLine(e.Response);
+        }
+
+        private static void Whois_BeforeSendRequest(object sender, EventArgs e)
+        {
+            YaWhoisClient client = (YaWhoisClient)sender;
+            Console.WriteLine("[server: {0}]", client.Server);
+            Console.WriteLine("[query: {0}]", client.ServerQuery);
+        }
+
+
+        static void TestParser()
         {
             var ipv6 = new string[]
             {
@@ -52,7 +115,9 @@ namespace YaWhois.App
                 "ibm.com",
                 "test.bz",
                 "mail.de",
-                "dk-hostmaster.dk"
+                "mail.ru",
+                "dk-hostmaster.dk",
+                "한국인터넷정보센터.한국"
             };
             DoTest(tld);
 
@@ -96,10 +161,6 @@ namespace YaWhois.App
                 "0.0.a.2.ip6.arpa"
             };
             DoTest(arpa);
-
-
-            Console.WriteLine("Press any key to continue...");
-            Console.ReadKey();
         }
 
 
@@ -118,17 +179,14 @@ namespace YaWhois.App
                     s.FormatQuery();
 
                     Console.WriteLine($"    server query: {s.ServerQuery}");
-
-                    if (s.ServerEncoding != null)
-                        Console.WriteLine($"    encoding: {s.ServerEncoding.WebName}");
-                    if (!string.IsNullOrEmpty(s.EncodingParameter))
-                        Console.WriteLine($"    options: {s.EncodingParameter}");
-
+                    Console.WriteLine($"    encoding: {s.ServerEncoding.WebName}");
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine($"{el} ERROR: {e.Message}");
                 }
+
+                Console.WriteLine();
             }
 
             Console.WriteLine(new string('-', 72));
