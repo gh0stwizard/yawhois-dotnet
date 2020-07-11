@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaWhois", "YaWhois\YaWhois.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaWhois.App", "YaWhois.App\YaWhois.App.csproj", "{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YaWhois.Tests", "YaWhois.Tests\YaWhois.Tests.csproj", "{242615D8-1832-43EA-B0B6-AD54F6F8186D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{242615D8-1832-43EA-B0B6-AD54F6F8186D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{242615D8-1832-43EA-B0B6-AD54F6F8186D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{242615D8-1832-43EA-B0B6-AD54F6F8186D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{242615D8-1832-43EA-B0B6-AD54F6F8186D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

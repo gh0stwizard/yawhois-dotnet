@@ -22,9 +22,9 @@ namespace YaWhois.App
             Console.OutputEncoding = Encoding.UTF8;
 
 
-            await WhoisTestAsync();
+            //await WhoisTestAsync();
 
-            //TestParser();
+            TestParser();
         }
 
 
@@ -164,6 +164,7 @@ namespace YaWhois.App
 
             var asn = new string[]
             {
+                "as1",
                 "as3.55",
                 "as32000",
                 "as65536",

@@ -238,7 +238,9 @@ namespace YaWhois
 
                 // TODO: Encoding.GetEncoding() is slow, the value must be cached.
                 ServerEncoding = Encoding.GetEncoding(encoding.Item2);
-                ServerQuery = encoding.Item3 + " " + ServerQuery;
+
+                if (!string.IsNullOrEmpty(encoding.Item3))
+                    ServerQuery = encoding.Item3 + " " + ServerQuery;
             }
 
             return this;
