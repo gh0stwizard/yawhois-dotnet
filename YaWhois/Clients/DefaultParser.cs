@@ -14,6 +14,9 @@ namespace YaWhois.Clients
 
         public string GetReferral(in string text)
         {
+            if (string.IsNullOrEmpty(text))
+                return null;
+
             using (var r = new StringReader(text))
             {
                 string line;

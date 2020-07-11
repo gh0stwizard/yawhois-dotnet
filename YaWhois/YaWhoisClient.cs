@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using YaWhois.Clients;
 
 namespace YaWhois
@@ -8,11 +11,6 @@ namespace YaWhois
     public class YaWhoisClient : WhoisClient
     {
         QueryParser QueryParser { get; set; }
-        YaWhoisClientEventArgs EventArgs { get; set; }
-
-
-        public string Server { get { return QueryParser.Server; } }
-        public string ServerQuery { get { return QueryParser.ServerQuery; } }
 
 
         // TODO: add function to register custom parsers.
@@ -25,7 +23,6 @@ namespace YaWhois
         public YaWhoisClient()
         {
             QueryParser = new QueryParser();
-            EventArgs = new YaWhoisClientEventArgs();
         }
 
 
@@ -35,25 +32,81 @@ namespace YaWhois
         }
 
 
+        public Task<string> QueryAsync(string obj, string server = null, CancellationToken ct = default)
+        {
+            return QueryAsync(obj, server, true, ct);
+        }
+
+
         private string Query(string obj, string server, bool clearHints)
         {
-            PrepareQuery(obj, server, clearHints);
+            var args = new YaWhoisClientEventArgs();
 
-            OnBeforeSendRequest(EventArgs);
+            lock (QueryParser)
+            {
+                PrepareQuery(obj, server, clearHints);
+                args.Parser = GetDataParser();
+                args.Server = QueryParser.Server;
+                args.Query = QueryParser.ServerQuery;
+                args.Encoding = QueryParser.ServerEncoding;
+            }
 
-            EventArgs.Response = Fetch(QueryParser.Server, QueryParser.ServerQuery);
-            EventArgs.Parser = GetDataParser();
+            OnBeforeSendRequest(args);
 
-            OnBeforeParseResponse(EventArgs);
+            args.Response = Fetch(args.Server, args.Query, args.Encoding);
 
-            EventArgs.Referral = EventArgs.Parser.GetReferral(EventArgs.Response);
+            OnBeforeParseResponse(args);
 
-            OnResponseParsed(EventArgs);
+            args.Referral = args.Parser.GetReferral(args.Response);
 
-            if (!string.IsNullOrEmpty(EventArgs.Referral))
-                return Query(obj, EventArgs.Referral, false);
+            OnResponseParsed(args);
 
-            return EventArgs.Response;
+            if (!string.IsNullOrEmpty(args.Referral))
+                return Query(obj, args.Referral, false);
+
+            return args.Response;
+        }
+
+
+        private Task<string> QueryAsync(string obj, string server, bool clearHints, CancellationToken ct)
+        {
+            return Task.Run(async () =>
+            {
+                var args = new YaWhoisClientEventArgs();
+
+                lock (QueryParser)
+                {
+                    PrepareQuery(obj, server, clearHints);
+                    args.Parser = GetDataParser();
+                    args.Server = QueryParser.Server;
+                    args.Query = QueryParser.ServerQuery;
+                    args.Encoding = QueryParser.ServerEncoding;
+                }
+
+                OnBeforeSendRequest(args);
+
+                try
+                {
+                    args.Response = await FetchAsync(args.Server, args.Query, args.Encoding, ct);
+
+                    OnBeforeParseResponse(args);
+
+                    args.Referral = args.Parser.GetReferral(args.Response);
+
+                    OnResponseParsed(args);
+
+                    if (!string.IsNullOrEmpty(args.Referral))
+                        return await QueryAsync(obj, args.Referral, false, ct);
+
+                    return args.Response;
+                }
+                catch (Exception e)
+                {
+                    args.Exception = e;
+                    OnExceptionThrown(args);
+                    return null;
+                }
+            }, ct);
         }
 
 
@@ -75,8 +128,6 @@ namespace YaWhois
                     QueryParser.ServerHint &= ~QueryParser.ServerHints.IANA;
                 }
             }
-
-            ReadEncoding = QueryParser.ServerEncoding;
 
             // Generate QueryParser.ServerQuery.
             // Especially this is needed when QueryParser.Query was changed above.
@@ -131,17 +182,27 @@ namespace YaWhois
             ResponseParsed?.Invoke(this, e);
         }
 
+        protected virtual void OnExceptionThrown(YaWhoisClientEventArgs e)
+        {
+            ExceptionThrown?.Invoke(this, e);
+        }
 
         public event EventHandler<YaWhoisClientEventArgs> BeforeSendRequest;
         public event EventHandler<YaWhoisClientEventArgs> BeforeParseResponse;
         public event EventHandler<YaWhoisClientEventArgs> ResponseParsed;
+        public event EventHandler<YaWhoisClientEventArgs> ExceptionThrown;
     }
 
 
     public class YaWhoisClientEventArgs : EventArgs
     {
+        public object Value { get; set; }
         public IDataParser Parser { get; set; }
+        public string Server { get; internal set; }
+        public string Query { get; internal set; }
+        public Encoding Encoding { get; internal set; }
         public string Response { get; internal set; }
         public string Referral { get; internal set; }
+        public Exception Exception { get; internal set; }
     }
 }

@@ -5,20 +5,31 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace YaWhois.App
 {
     class Program
     {
-        static void Main(string[] args)
-        {
+        static object locker = new object();
+        static bool waiting = true;
 
+
+        static async Task Main(string[] args)
+        {
             var ci = new CultureInfo("en-US");
-            Thread.CurrentThread.CurrentCulture = ci;
             Thread.CurrentThread.CurrentUICulture = ci;
             Console.OutputEncoding = Encoding.UTF8;
 
 
+            await WhoisTestAsync();
+
+            //TestParser();
+        }
+
+
+        private static void WhoisTest()
+        {
             var whois = new YaWhoisClient();
             whois.BeforeSendRequest += Whois_BeforeSendRequest;
             //whois.BeforeParseResponse += Whois_BeforeParseResponse;
@@ -43,30 +54,100 @@ namespace YaWhois.App
 
             //whois.Query("1.0.0.1", "whois.arin.net");
             //whois.Query("as3300", "whois.arin.net");
-
-
-            TestParser();
         }
+
+
+        private static async Task WhoisTestAsync()
+        {
+            var whois = new YaWhoisClient();
+//            whois.BeforeSendRequest += Whois_BeforeSendRequest;
+            whois.ResponseParsed += Whois_ResponseParsed;
+            whois.ExceptionThrown += Whois_ExceptionThrown;
+
+            try
+            {
+                var cancelsource = new CancellationTokenSource();
+                //cancelsource.CancelAfter(100);
+                var t1 = whois.QueryAsync("xn--3hcrj9c", "127.0.0.1", ct: cancelsource.Token); // ଭାରତ
+                var t2 = whois.QueryAsync("xn--3hcrj9c", "127.0.0.2", ct: cancelsource.Token);
+                //Thread.Sleep(100); cancelsource.Cancel();
+
+                var t3 = Task.Run(() =>
+                {
+                    var syms = new char[] { '-', '\\', '|', '/' };
+                    var i = 0;
+                    while (waiting)
+                    {
+                        Console.Write("\b{0}", syms[i++]);
+                        if (i >= syms.Length) i = 0;
+                        Thread.Sleep(100);
+                    }
+                });
+
+                //var t4 = whois.QueryAsync("mail.ru", ct: cancelsource.Token);
+
+                await Task.WhenAll(t1, t2, t3);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+            }
+        }
+
+
+        private static void Whois_ExceptionThrown(object sender, YaWhoisClientEventArgs e)
+        {
+            lock (locker)
+            {
+                if (waiting)
+                {
+                    waiting = false;
+                    Console.WriteLine("\b>_");
+                }
+
+                Console.WriteLine("[server: {0}]", e.Server);
+                Console.WriteLine("[query: {0}]", e.Query);
+                Console.WriteLine();
+                Console.WriteLine($"Error: {e.Exception.Message}");
+                Console.WriteLine($"StackTrace:\n{e.Exception.StackTrace}");
+                Console.WriteLine(new string('-', 72));
+            }
+        }
+
 
         private static void Whois_ResponseParsed(object sender, YaWhoisClientEventArgs e)
         {
-            if (!string.IsNullOrEmpty(e.Referral))
-                Console.WriteLine("[refer: {0}]", e.Referral);
+            lock (locker)
+            {
+                if (waiting)
+                {
+                    waiting = false;
+                    Console.WriteLine("\b>_");
+                }
 
-            Console.WriteLine();
-            Console.WriteLine(e.Response);
+                Console.WriteLine("[server: {0}]", e.Server);
+                Console.WriteLine("[query: {0}]", e.Query);
+
+                if (!string.IsNullOrEmpty(e.Referral))
+                    Console.WriteLine("[refer: {0}]", e.Referral);
+
+                Console.WriteLine();
+                Console.WriteLine(e.Response);
+            }
         }
+
 
         private static void Whois_BeforeParseResponse(object sender, YaWhoisClientEventArgs e)
         {
             //Console.WriteLine(e.Response);
         }
 
-        private static void Whois_BeforeSendRequest(object sender, EventArgs e)
+
+        private static void Whois_BeforeSendRequest(object sender, YaWhoisClientEventArgs e)
         {
-            YaWhoisClient client = (YaWhoisClient)sender;
-            Console.WriteLine("[server: {0}]", client.Server);
-            Console.WriteLine("[query: {0}]", client.ServerQuery);
+            Console.WriteLine("[server: {0}]", e.Server);
+            Console.WriteLine("[query: {0}]", e.Query);
         }
 
 
