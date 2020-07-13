@@ -256,7 +256,7 @@ namespace YaWhois
 
             var net = (p1 << 16) + stdlib.strtoul(s.Substring(s.IndexOf(':') + 1), 16);
             var assign = Assignments.IPv6
-                .Where(x => x.Item1 == (net & (~0UL << (32 - x.Item2))))
+                .Where(x => x.Item1 == (net & (~0U << (32 - x.Item2))))
                 .FirstOrDefault();
 
             if (assign == null)

@@ -32,9 +32,9 @@ namespace YaWhois
         }
 
 
-        public Task<string> QueryAsync(string obj, string server = null, CancellationToken ct = default)
+        public Task<string> QueryAsync(string obj, string server = null, CancellationToken token = default)
         {
-            return QueryAsync(obj, server, true, ct);
+            return QueryAsync(obj, server, true, token);
         }
 
 
@@ -165,6 +165,8 @@ namespace YaWhois
         }
 
 
+        #region Events
+
         protected virtual void OnBeforeSendRequest(YaWhoisClientEventArgs e)
         {
             BeforeSendRequest?.Invoke(this, e);
@@ -182,27 +184,18 @@ namespace YaWhois
             ResponseParsed?.Invoke(this, e);
         }
 
+
         protected virtual void OnExceptionThrown(YaWhoisClientEventArgs e)
         {
             ExceptionThrown?.Invoke(this, e);
         }
 
+
         public event EventHandler<YaWhoisClientEventArgs> BeforeSendRequest;
         public event EventHandler<YaWhoisClientEventArgs> BeforeParseResponse;
         public event EventHandler<YaWhoisClientEventArgs> ResponseParsed;
         public event EventHandler<YaWhoisClientEventArgs> ExceptionThrown;
-    }
 
-
-    public class YaWhoisClientEventArgs : EventArgs
-    {
-        public object Value { get; set; }
-        public IDataParser Parser { get; set; }
-        public string Server { get; internal set; }
-        public string Query { get; internal set; }
-        public Encoding Encoding { get; internal set; }
-        public string Response { get; internal set; }
-        public string Referral { get; internal set; }
-        public Exception Exception { get; internal set; }
+        #endregion
     }
 }

@@ -68,8 +68,8 @@ namespace YaWhois.App
             {
                 var cancelsource = new CancellationTokenSource();
                 //cancelsource.CancelAfter(100);
-                var t1 = whois.QueryAsync("xn--3hcrj9c", "127.0.0.1", ct: cancelsource.Token); // ଭାରତ
-                var t2 = whois.QueryAsync("xn--3hcrj9c", "127.0.0.2", ct: cancelsource.Token);
+                var t1 = whois.QueryAsync("xn--3hcrj9c", "127.0.0.1", cancelsource.Token); // ଭାରତ
+                var t2 = whois.QueryAsync("xn--3hcrj9c", "127.0.0.2", cancelsource.Token);
                 //Thread.Sleep(100); cancelsource.Cancel();
 
                 var t3 = Task.Run(() =>
