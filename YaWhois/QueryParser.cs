@@ -438,11 +438,13 @@ namespace YaWhois
                         var ip4str = ConvertInArpa(Query);
                         TryParseIPv4(ip4str, out uint ip4);
                         FindIPv4(ip4);
+                        ServerHint &= ~ServerHints.QUERY_IP;
                         return true;
 
                     case Assignments.Hints.IPv6:
                         var ip6str = ConvertInArpa6(Query);
                         ParseIPv6(ip6str);
+                        ServerHint &= ~ServerHints.QUERY_IP;
                         return true;
 
                     case Assignments.Hints.AFILIAS:
@@ -533,18 +535,32 @@ namespace YaWhois
 
             long[] abc = new long[] { 0, 0, 0 };
             var s = str;
-            for (var i = 0; i < abc.Length; i++)
+            int i = 0;
+            stdlib.errno = 0;
+            for (; i < abc.Length && s.Length > "in-addr.arpa".Length; i++)
             {
                 if (i >= 4)
                     return "0.0.0.0";
 
-                // XXX: end is a byte position, but used as a character ones.
+                // XXX: 'end' is a byte position, but used as a character ones.
                 var oct = stdlib.strtol(s, out long end, 10);
-                if (oct < 0 || oct > 255 || s[(int)end] != '.')
+                if (stdlib.errno != 0 || oct < 0 || oct > 255 || s[(int)end] != '.')
                     return "0.0.0.0";
 
                 abc[i] = oct;
                 s = s.Substring((int)end + 1);
+            }
+
+            if (i == 1)
+            {
+                abc[2] = abc[0];
+                abc[0] = abc[1] = 0;
+            }
+            else if (i == 2)
+            {
+                abc[2] = abc[1];
+                abc[1] = abc[0];
+                abc[0] = 0;
             }
 
             return string.Join(".", abc.Reverse()) + ".0";

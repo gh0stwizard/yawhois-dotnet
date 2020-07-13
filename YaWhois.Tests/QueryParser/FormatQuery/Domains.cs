@@ -31,5 +31,13 @@ namespace YaWhois.Tests.QueryParser.FormatQuery
             var qp = _parser.GuessServer(value).FormatQuery();
             Assert.True(qp.ServerQuery.EndsWith("/e"));
         }
+
+
+        [TestCase("b.a.9.8.7.6.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.8.b.d.0.1.0.0.2.ip6.arpa")]
+        public void Passed_ip6_arpa(string value)
+        {
+            var qp = _parser.GuessServer(value).FormatQuery();
+            Assert.AreEqual(value, qp.ServerQuery);
+        }
     }
 }

@@ -33,6 +33,18 @@ namespace YaWhois.Utils
     //   2. http://git.musl-libc.org/cgit/musl/tree/src/internal/intscan.c
     internal static unsafe class stdlib
     {
+        // TODO: thread-safety?
+        public static int errno;
+
+
+        public enum ErrorCodes
+        {
+            NONE,
+            EINVAL,
+            ERANGE
+        }
+
+
         /// <summary>
         /// 0UL + LONG_MIN: no critic.
         /// </summary>
@@ -75,7 +87,10 @@ namespace YaWhois.Utils
             ulong y;
 
             if (@base > 36 || @base == 1)
-                throw new ArgumentException("base");
+            {
+                errno = (int)ErrorCodes.EINVAL;
+                return 0;
+            }
 
             while (isspace(c = (byte)f.ReadByte())) ;
 
@@ -112,7 +127,7 @@ namespace YaWhois.Utils
                 {
                     f.Position--;
                     f.Seek(0, SeekOrigin.Begin);
-                    throw new ArgumentException();
+                    errno = (int)ErrorCodes.EINVAL;
                     return 0;
                 }
             }
@@ -144,7 +159,7 @@ namespace YaWhois.Utils
             if (table[c] < @base)
             {
                 for (; table[c] < @base; c = (byte)f.ReadByte()) ;
-                throw new Exception("Result too large.");
+                errno = (int)ErrorCodes.ERANGE;
                 y = lim;
                 if ((lim & 1) > 0) neg = 0;
             }
@@ -155,12 +170,12 @@ namespace YaWhois.Utils
             {
                 if ((lim & 1) == 0 && neg != 0)
                 {
-                    throw new Exception("Result too large.");
+                    errno = (int)ErrorCodes.ERANGE;
                     return lim - 1;
                 }
                 else if (y > lim)
                 {
-                    throw new Exception("Result too large.");
+                    errno = (int)ErrorCodes.ERANGE;
                     return lim;
                 }
             }
