@@ -16,4 +16,28 @@
     <ProjectReference Include="..\YaWhois\YaWhois.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="WhoisClient\Resources\General.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>General.resx</DependentUpon>
+    </Compile>
+    <Compile Update="WhoisClient\Resources\IanaOrg.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>IanaOrg.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="WhoisClient\Resources\General.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>General.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="WhoisClient\Resources\IanaOrg.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>IanaOrg.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

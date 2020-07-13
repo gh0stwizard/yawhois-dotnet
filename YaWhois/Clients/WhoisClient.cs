@@ -15,7 +15,7 @@ namespace YaWhois.Clients
         public int ReadBufferSize = 8192;
 
 
-        internal string Fetch(string server, string query, Encoding readEncoding)
+        protected virtual string Fetch(string server, string query, Encoding readEncoding)
         {
             if (string.IsNullOrEmpty(server))
                 throw new ArgumentNullException("server");
@@ -68,7 +68,7 @@ namespace YaWhois.Clients
         }
 
 
-        internal async Task<string> FetchAsync(
+        protected virtual async Task<string> FetchAsync(
             string server, string query, Encoding readEncoding, CancellationToken ct)
         {
             if (string.IsNullOrEmpty(server))

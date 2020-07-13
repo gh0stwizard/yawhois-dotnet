@@ -1,0 +1,220 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="1.0.0.1" xml:space="preserve">
+    <value>% [whois.apnic.net]
+% Whois data copyright terms    http://www.apnic.net/db/dbcopyright.html
+
+% Information related to '1.0.0.0 - 1.0.0.255'
+
+% Abuse contact for '1.0.0.0 - 1.0.0.255' is 'abuse@apnic.net'
+
+inetnum:        1.0.0.0 - 1.0.0.255
+netname:        APNIC-LABS
+descr:          APNIC and Cloudflare DNS Resolver project
+descr:          Routed globally by AS13335/Cloudflare
+descr:          Research prefix for APNIC Labs
+country:        AU
+org:            ORG-ARAD1-AP
+admin-c:        AR302-AP
+tech-c:         AR302-AP
+mnt-by:         APNIC-HM
+mnt-routes:     MAINT-AU-APNIC-GM85-AP
+mnt-irt:        IRT-APNICRANDNET-AU
+status:         ASSIGNED PORTABLE
+remarks:        ---------------
+remarks:        All Cloudflare abuse reporting can be done via
+remarks:        resolver-abuse@cloudflare.com
+remarks:        ---------------
+last-modified:  2018-03-30T01:51:04Z
+source:         APNIC
+
+irt:            IRT-APNICRANDNET-AU
+address:        PO Box 3646
+address:        South Brisbane, QLD 4101
+address:        Australia
+e-mail:         abuse@apnic.net
+abuse-mailbox:  abuse@apnic.net
+admin-c:        AR302-AP
+tech-c:         AR302-AP
+auth:           # Filtered
+mnt-by:         MAINT-AU-APNIC-GM85-AP
+last-modified:  2011-09-22T03:53:02Z
+source:         APNIC
+
+organisation:   ORG-ARAD1-AP
+org-name:       APNIC Research and Development
+country:        AU
+address:        6 Cordelia St
+phone:          +61-7-38583100
+fax-no:         +61-7-38583199
+e-mail:         helpdesk@apnic.net
+mnt-ref:        APNIC-HM
+mnt-by:         APNIC-HM
+last-modified:  2017-10-11T01:28:39Z
+source:         APNIC
+
+role:           APNIC RESEARCH
+address:        PO Box 3646
+address:        South Brisbane, QLD 4101
+address:        Australia
+country:        AU
+phone:          +61-7-3858-3188
+fax-no:         +61-7-3858-3199
+e-mail:         research@apnic.net
+nic-hdl:        AR302-AP
+tech-c:         AH256-AP
+admin-c:        AH256-AP
+mnt-by:         MAINT-APNIC-AP
+last-modified:  2018-04-04T04:26:04Z
+source:         APNIC
+
+% Information related to '1.0.0.0/24AS13335'
+
+route:          1.0.0.0/24
+origin:         AS13335
+descr:          APNIC Research and Development
+                6 Cordelia St
+mnt-by:         MAINT-AU-APNIC-GM85-AP
+last-modified:  2018-03-16T16:58:27Z
+source:         APNIC
+
+% This query was served by the APNIC Whois Service version 1.88.15-SNAPSHOT (WHOIS-UK4)</value>
+  </data>
+  <data name="ya.ru" xml:space="preserve">
+    <value>% By submitting a query to RIPN's Whois Service
+% you agree to abide by the following terms of use:
+% http://www.ripn.net/about/servpol.html#3.2 (in Russian)
+% http://www.ripn.net/about/en/servpol.html#3.2 (in English).
+
+domain:        YA.RU
+nserver:       ns1.yandex.ru.
+nserver:       ns2.yandex.ru.
+state:         REGISTERED, DELEGATED, VERIFIED
+org:           YANDEX, LLC.
+registrar:     RU-CENTER-RU
+admin-contact: https://www.nic.ru/whois
+created:       1999-07-12T14:40:22Z
+paid-till:     2020-07-31T21:00:00Z
+free-date:     2020-09-01
+source:        TCI
+
+Last updated on 2020-07-13T21:16:34Z</value>
+  </data>
+</root>
