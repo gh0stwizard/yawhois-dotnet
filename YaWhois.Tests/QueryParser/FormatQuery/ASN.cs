@@ -8,19 +8,28 @@ namespace YaWhois.Tests.QueryParser.FormatQuery
     public class ASN : BaseClass
     {
         [TestCase("as1")]
-        public void Passed16(string value)
+        public void Passed_arin(string value)
         {
-            var r = _parser.GuessServer(value).FormatQuery();
+            var qp = _parser.GuessServer(value).FormatQuery();
             var n = value.Substring(2);
-            Assert.AreEqual("a " + n, r.ServerQuery);
+            Assert.AreEqual("a " + n, qp.ServerQuery);
         }
 
 
         [TestCase("as3.55")]
-        public void Passed32(string value)
+        public void Passed_ripe(string value)
         {
-            var r = _parser.GuessServer(value).FormatQuery();
-            Assert.AreEqual(value, r.ServerQuery);
+            var qp = _parser.GuessServer(value).FormatQuery();
+            Assert.AreEqual(value, qp.ServerQuery);
+        }
+
+
+        [TestCase("as131951")]
+        public void Passed_nic_ad_jp(string value)
+        {
+            var qp = _parser.GuessServer(value).FormatQuery();
+            var n = value.Substring(2);
+            Assert.True(qp.ServerQuery.EndsWith($"{n}/e"));
         }
     }
 }

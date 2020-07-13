@@ -3,10 +3,11 @@ using NUnit.Framework;
 
 namespace YaWhois.Tests.QueryParser.GuessServer
 {
-    public class IPv4 : BaseClass
+    public class Arpa : BaseClass
     {
-        [TestCase("198.17.79.5")]
-        [TestCase("1.0.1.1")]
+        [TestCase("1.10.78.in-addr.arpa")]
+        [TestCase("10.78.in-addr.arpa")]
+        [TestCase("78.in-addr.arpa")]
         public void Passed(string value)
         {
             var qp = _parser.GuessServer(value);
@@ -14,9 +15,7 @@ namespace YaWhois.Tests.QueryParser.GuessServer
         }
 
 
-        [TestCase("0.0.1.1")]
-        [TestCase("255.255.255.255")]
-        [TestCase("300.1.2.3")]
+        [TestCase("0.0.10.78.in-addr.arpa")]
         public void NoServerException(string value)
         {
             Assert.Throws<YaWhois.QueryParser.NoServerException>(delegate {

@@ -419,7 +419,7 @@ namespace YaWhois
             var dom = fqdn.ToLowerInvariant();
             var domlen = dom.Length;
             var tld_result = Assignments.TLD
-                .Where(a => a.Item1.Length <= domlen - 1) // dot + tld
+                .Where(a => domlen > a.Item1.Length + 1) // dot + tld
                 .Where(a => dom[domlen - a.Item1.Length - 1] == '.')
                 .Where(a => dom.EndsWith(a.Item1))
                 .FirstOrDefault();

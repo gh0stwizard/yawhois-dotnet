@@ -10,8 +10,8 @@ namespace YaWhois.Tests.QueryParser.GuessServer
         [TestCase("as131951")]
         public void Passed(string value)
         {
-            var r = _parser.GuessServer(value);
-            Assert.AreEqual(value, r.Query);
+            var qp = _parser.GuessServer(value);
+            Assert.AreEqual(value, qp.Query);
         }
 
 
