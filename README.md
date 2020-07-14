@@ -164,6 +164,19 @@ static void Whois_ResponseParsed(object sender, YaWhoisClientEventArgs e)
 ```
 
 
+## Exceptions
+
+There are special exceptions which may be thrown by `YaWhoisClient`:
+* `NoServerException` - when unable to find a server for this kind of object
+* `UnknownNetworkException` - probably invalid AS number or IP address has been passed
+* `ExternalWhoisException` - the server infromation is accessed by external resource
+
+The `Query()` method throws exceptions.
+
+The `QueryAsync()` method does not throws exceptions, instead it calls
+the `ExceptionThrown` delegate (see above for details).
+
+
 ## See also
 
 * [RFC 3912][1] - WHOIS Protocol Specification
