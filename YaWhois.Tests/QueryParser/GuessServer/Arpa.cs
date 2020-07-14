@@ -30,7 +30,7 @@ namespace YaWhois.Tests.QueryParser.GuessServer
         [TestCase("0.1.0.0.2.ip6.arpa", Description = "Teredo 0.0.0.0")]
         public void NoServerException(string value)
         {
-            Assert.Throws<YaWhois.QueryParser.NoServerException>(delegate {
+            Assert.Throws<YaWhois.NoServerException>(delegate {
                 _parser.GuessServer(value);
             });
         }

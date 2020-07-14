@@ -61,7 +61,16 @@ namespace YaWhois.Tests.QueryParser.GuessServer
         [TestCase("a")]
         public void NoServerException(string value)
         {
-            Assert.Throws<YaWhois.QueryParser.NoServerException>(delegate {
+            Assert.Throws<YaWhois.NoServerException>(delegate {
+                _parser.GuessServer(value);
+            });
+        }
+
+
+        [TestCase("mail.az")]
+        public void ExternalWhoisException(string value)
+        {
+            Assert.Throws<YaWhois.ExternalWhoisException>(delegate {
                 _parser.GuessServer(value);
             });
         }

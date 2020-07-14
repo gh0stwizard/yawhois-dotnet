@@ -17,7 +17,7 @@ namespace YaWhois.Tests.QueryParser.GuessServer
         [TestCase("FF01::101")]
         public void UnknownNetworkException(string value)
         {
-            Assert.Throws<YaWhois.QueryParser.UnknownNetworkException>(delegate
+            Assert.Throws<YaWhois.UnknownNetworkException>(delegate
             {
                 _parser.GuessServer(value);
             });
@@ -28,7 +28,7 @@ namespace YaWhois.Tests.QueryParser.GuessServer
         [TestCase("::")]
         public void NoServerException(string value)
         {
-            Assert.Throws<YaWhois.QueryParser.NoServerException>(delegate
+            Assert.Throws<YaWhois.NoServerException>(delegate
             {
                 _parser.GuessServer(value);
             });

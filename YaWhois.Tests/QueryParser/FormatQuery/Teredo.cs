@@ -25,7 +25,7 @@ namespace YaWhois.Tests.QueryParser.FormatQuery
         [TestCase("2001:0000:4136:e378:8000:63bf:3fff:fdd22")]
         public void NoServerException(string value)
         {
-            Assert.Throws<YaWhois.QueryParser.NoServerException>(delegate {
+            Assert.Throws<YaWhois.NoServerException>(delegate {
                 _parser.GuessServer(value).FormatQuery();
             });
         }
