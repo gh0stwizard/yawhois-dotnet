@@ -9,7 +9,15 @@
 
     <Company>gh0stwizard.tk</Company>
 
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageLicenseFile></PackageLicenseFile>
+
+    <PackageProjectUrl>https://github.com/gh0stwizard/yawhois-dotnet</PackageProjectUrl>
+
+    <RepositoryUrl>https://github.com/gh0stwizard/yawhois-dotnet.git</RepositoryUrl>
+
+    <RepositoryType>git</RepositoryType>
+
+    <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
@@ -44,13 +52,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>IanaOrg.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\LICENSE.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>

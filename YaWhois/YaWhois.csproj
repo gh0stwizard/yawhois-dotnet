@@ -6,7 +6,14 @@
     <Description>Yet Another WHOIS Standard 2.0 Library.</Description>
     <Copyright>2020 Vitaliy V. Tokarev</Copyright>
     <Company>gh0stwizard.tk</Company>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageLicenseFile></PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/gh0stwizard/yawhois-dotnet</PackageProjectUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/gh0stwizard/yawhois-dotnet.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>whois whois-client</PackageTags>
+    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,10 +25,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
     <None Include="Data\as16.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

@@ -6,7 +6,11 @@
     <Authors>Vitaliy V. Tokarev</Authors>
     <Company>gh0stwizard.tk</Company>
     <Description>Console WHOIS Client Application powered by YaWhois Library.</Description>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageLicenseFile></PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/gh0stwizard/yawhois-dotnet</PackageProjectUrl>
+    <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/gh0stwizard/yawhois-dotnet.git</RepositoryUrl>
+    <PackageTags>whois-client</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,13 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\YaWhois\YaWhois.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\LICENSE.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
 </Project>
