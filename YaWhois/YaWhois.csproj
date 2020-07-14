@@ -2,6 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Vitaliy V. Tokarev</Authors>
+    <Description>Yet Another WHOIS Standard 2.0 Library.</Description>
+    <Copyright>2020 Vitaliy V. Tokarev</Copyright>
+    <Company>gh0stwizard.tk</Company>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -4,6 +4,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <Authors>Vitaliy V. Tokarev</Authors>
+
+    <Company>gh0stwizard.tk</Company>
   </PropertyGroup>
 
   <ItemGroup>

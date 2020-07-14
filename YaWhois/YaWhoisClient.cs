@@ -24,21 +24,22 @@ namespace YaWhois
         }
 
 
-        public string Query(string obj, string server = null)
+        public string Query(string obj, string server = null, object value = null)
         {
-            return Query(obj, server, true);
+            return Query(obj, server, true, value);
         }
 
 
-        public Task<string> QueryAsync(string obj, string server = null, CancellationToken token = default)
+        public Task<string> QueryAsync(
+            string obj, string server = null, CancellationToken token = default, object value = null)
         {
-            return QueryAsync(obj, server, true, token);
+            return QueryAsync(obj, server, true, token, value);
         }
 
 
-        private string Query(string obj, string server, bool clearHints)
+        private string Query(string obj, string server, bool clearHints, object value)
         {
-            var args = new YaWhoisClientEventArgs();
+            var args = new YaWhoisClientEventArgs() { Value = value };
 
             lock (QueryParser)
             {
@@ -60,18 +61,18 @@ namespace YaWhois
             OnResponseParsed(args);
 
             if (!string.IsNullOrEmpty(args.Referral))
-                return Query(obj, args.Referral, false);
+                return Query(obj, args.Referral, false, value);
 
             return args.Response;
         }
 
 
-        private Task<string> QueryAsync(string obj, string server, bool clearHints, CancellationToken ct)
+        private Task<string> QueryAsync(string obj, string server, bool clearHints, CancellationToken ct, object value = null)
         {
+            var args = new YaWhoisClientEventArgs() { Value = value };
+
             return Task.Run(async () =>
             {
-                var args = new YaWhoisClientEventArgs();
-
                 lock (QueryParser)
                 {
                     PrepareQuery(obj, server, clearHints);
@@ -94,7 +95,7 @@ namespace YaWhois
                     OnResponseParsed(args);
 
                     if (!string.IsNullOrEmpty(args.Referral))
-                        return await QueryAsync(obj, args.Referral, false, ct);
+                        return await QueryAsync(obj, args.Referral, false, ct, value);
 
                     return args.Response;
                 }

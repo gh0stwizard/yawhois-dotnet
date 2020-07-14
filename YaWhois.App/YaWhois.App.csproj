@@ -3,7 +3,14 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Authors>Vitaliy V. Tokarev</Authors>
+    <Company>gh0stwizard.tk</Company>
+    <Description>Console WHOIS Client Application powered by YaWhois Library.</Description>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\YaWhois\YaWhois.csproj" />
