@@ -6,6 +6,7 @@
     <Authors>Vitaliy V. Tokarev</Authors>
     <Company>gh0stwizard.tk</Company>
     <Description>Console WHOIS Client Application powered by YaWhois Library.</Description>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +15,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\YaWhois\YaWhois.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

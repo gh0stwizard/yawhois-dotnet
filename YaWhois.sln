@@ -7,7 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaWhois", "YaWhois\YaWhois.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaWhois.App", "YaWhois.App\YaWhois.App.csproj", "{38A7DCE2-0D61-4063-8905-9A1D35BCC6C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YaWhois.Tests", "YaWhois.Tests\YaWhois.Tests.csproj", "{242615D8-1832-43EA-B0B6-AD54F6F8186D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaWhois.Tests", "YaWhois.Tests\YaWhois.Tests.csproj", "{242615D8-1832-43EA-B0B6-AD54F6F8186D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{260F822B-7449-463B-A3BF-02A1DD637A93}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "YaWhois.App": {
+      "commandName": "Project",
+      "commandLineArgs": "-I --verbose example.com"
+    }
+  }
+}

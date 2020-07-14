@@ -6,6 +6,7 @@
     <Description>Yet Another WHOIS Standard 2.0 Library.</Description>
     <Copyright>2020 Vitaliy V. Tokarev</Copyright>
     <Company>gh0stwizard.tk</Company>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,6 +18,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="Data\as16.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
