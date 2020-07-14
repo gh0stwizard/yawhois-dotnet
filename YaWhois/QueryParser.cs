@@ -11,13 +11,15 @@ namespace YaWhois
     public class QueryParser
     {
         /// <summary>
-        /// Normalized query request.
+        /// Normalized query.
         /// </summary>
         public string Query { get; internal set; }
+
         /// <summary>
-        /// Selected server for Query.
+        /// The selected server for this query.
         /// </summary>
         public string Server { get; internal set; }
+
         /// <summary>
         /// Set of server hints.
         /// </summary>
@@ -25,9 +27,13 @@ namespace YaWhois
 
         #region FormatQuery fields
         /// <summary>
-        /// A query which will be passed to a server.
+        /// The query string, which will be passed to the server.
         /// </summary>
         public string ServerQuery { get; internal set; }
+
+        /// <summary>
+        /// The encoding used by the server.
+        /// </summary>
         public Encoding ServerEncoding { get; internal set; }
         #endregion
 
@@ -53,12 +59,17 @@ namespace YaWhois
 #endif
 
 
-        public QueryParser GuessServer(string s)
+        /// <summary>
+        /// Try to guess WHOIS server for specified query object.
+        /// </summary>
+        /// <param name="obj">A query object.</param>
+        /// <returns>The <see cref="QueryParser"/> object of self.</returns>
+        public QueryParser GuessServer(string obj)
         {
-            if (string.IsNullOrWhiteSpace(s))
+            if (string.IsNullOrWhiteSpace(obj))
                 throw new ArgumentException("Empty query.");
 
-            Query = Punycode.ToAscii(s.Trim().TrimEnd(new char[] { '.' }));
+            Query = Punycode.ToAscii(obj.Trim().TrimEnd(new char[] { '.' }));
             Server = null;
             ServerQuery = string.Empty;
             ServerEncoding = Encoding.ASCII;
@@ -69,7 +80,7 @@ namespace YaWhois
             {
                 // RPSL hierarchical objects
                 if (Query.StartsWith("as", StringComparison.InvariantCultureIgnoreCase))
-                    return FindAS(stdlib.strtoul(s.Substring(2), 10));
+                    return FindAS(stdlib.strtoul(obj.Substring(2), 10));
 
                 return ParseIPv6(Query);
             }
@@ -166,6 +177,10 @@ namespace YaWhois
         }
 
 
+        /// <summary>
+        /// Generates <see cref="ServerQuery"/>. Must be called after GuessServer().
+        /// </summary>
+        /// <returns>The <see cref="QueryParser"/> object of self.</returns>
         public QueryParser FormatQuery()
         {
             if (string.IsNullOrEmpty(Server))
@@ -385,7 +400,7 @@ namespace YaWhois
         /// <summary>
         /// Returns true if specified string is valid ASN32, e.g. 123.768.
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="s">An ASN string.</param>
         /// <param name="asn32"></param>
         /// <returns></returns>
         static bool TryParseASN32(string s, out uint asn32)

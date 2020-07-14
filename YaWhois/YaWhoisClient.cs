@@ -24,12 +24,27 @@ namespace YaWhois
         }
 
 
+        /// <summary>
+        /// Make WHOIS request synchronously.
+        /// </summary>
+        /// <param name="obj">A query object.</param>
+        /// <param name="server">A server to connect.</param>
+        /// <param name="value">An user object.</param>
+        /// <returns>WHOIS server response.</returns>
         public string Query(string obj, string server = null, object value = null)
         {
             return Query(obj, server, true, value);
         }
 
 
+        /// <summary>
+        /// Make WHOIS request asynchronously.
+        /// </summary>
+        /// <param name="obj">A query object.</param>
+        /// <param name="server">A server to connect.</param>
+        /// <param name="token">A cancellation token.</param>
+        /// <param name="value">An user object.</param>
+        /// <returns>WHOIS server response.</returns>
         public Task<string> QueryAsync(
             string obj, string server = null, CancellationToken token = default, object value = null)
         {
@@ -189,10 +204,26 @@ namespace YaWhois
             ExceptionThrown?.Invoke(this, e);
         }
 
-
+        /// <summary>
+        /// Called before connecting to a server.
+        /// </summary>
         public event EventHandler<YaWhoisClientEventArgs> BeforeSendRequest;
+
+        /// <summary>
+        /// Called when response from the server has been received,
+        /// but before retrieving referral.
+        /// </summary>
         public event EventHandler<YaWhoisClientEventArgs> BeforeParseResponse;
+
+        /// <summary>
+        /// Called when the server response has been parsed and the referral
+        /// filled in.
+        /// </summary>
         public event EventHandler<YaWhoisClientEventArgs> ResponseParsed;
+
+        /// <summary>
+        /// Called only by QueryAsync() method when something goes wrong.
+        /// </summary>
         public event EventHandler<YaWhoisClientEventArgs> ExceptionThrown;
 
         #endregion
