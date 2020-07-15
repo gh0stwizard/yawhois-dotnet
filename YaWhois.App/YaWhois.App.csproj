@@ -11,6 +11,7 @@
     <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/gh0stwizard/yawhois-dotnet.git</RepositoryUrl>
     <PackageTags>whois-client</PackageTags>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
