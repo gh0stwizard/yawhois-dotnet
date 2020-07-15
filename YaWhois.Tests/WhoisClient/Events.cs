@@ -10,7 +10,7 @@ namespace YaWhois.Tests.WhoisClient
     public class Events : BaseClass
     {
         [Test]
-        public void Query ()
+        public void Query()
         {
             bool
                 BeforeParseResponse_called = false,
@@ -48,12 +48,34 @@ namespace YaWhois.Tests.WhoisClient
 
 
         [Test]
-        public async Task QueryAsync_Exception()
+        public async Task QueryAsync_ExceptionThrown()
         {
             bool called = false;
 
             _whois.ExceptionThrown += (o, e) => called = true;
             await _whois.QueryAsync("exception.com");
+
+            Assert.IsTrue(called);
+        }
+
+
+        [Test]
+        public async Task QueryAsync_Delegate_Exception()
+        {
+            bool called = false;
+
+            _whois.ResponseParsed += (o, e) =>
+            {
+                throw new SuccessException("passed");
+            };
+
+            _whois.ExceptionThrown += (o, e) =>
+            {
+                if (e.Exception is SuccessException)
+                    called = true;
+            };
+
+            await _whois.QueryAsync("ya.ru");
 
             Assert.IsTrue(called);
         }

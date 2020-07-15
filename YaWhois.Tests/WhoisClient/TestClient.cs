@@ -44,7 +44,7 @@ namespace YaWhois.Tests.WhoisClient
                 if (query == "exception.com")
                     throw new Exception("test exception");
 
-                return string.Empty;
+                return GetResponse(server, query);
             });
         }
     }
