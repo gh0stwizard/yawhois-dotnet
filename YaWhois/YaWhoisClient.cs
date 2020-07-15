@@ -82,45 +82,42 @@ namespace YaWhois
         }
 
 
-        private Task<string> QueryAsync(string obj, string server, bool clearHints, CancellationToken ct, object value = null)
+        private async Task<string> QueryAsync(string obj, string server, bool clearHints, CancellationToken ct, object value = null)
         {
             var args = new YaWhoisClientEventArgs() { Value = value };
 
-            return Task.Run(async () =>
+            lock (QueryParser)
             {
-                lock (QueryParser)
-                {
-                    PrepareQuery(obj, server, clearHints);
-                    args.Parser = GetDataParser();
-                    args.Server = QueryParser.Server;
-                    args.Query = QueryParser.ServerQuery;
-                    args.Encoding = QueryParser.ServerEncoding;
-                }
+                PrepareQuery(obj, server, clearHints);
+                args.Parser = GetDataParser();
+                args.Server = QueryParser.Server;
+                args.Query = QueryParser.ServerQuery;
+                args.Encoding = QueryParser.ServerEncoding;
+            }
 
+            try
+            {
                 OnBeforeSendRequest(args);
 
-                try
-                {
-                    args.Response = await FetchAsync(args.Server, args.Query, args.Encoding, ct);
+                args.Response = await FetchAsync(args.Server, args.Query, args.Encoding, ct);
 
-                    OnBeforeParseResponse(args);
+                OnBeforeParseResponse(args);
 
-                    args.Referral = args.Parser.GetReferral(args.Response);
+                args.Referral = args.Parser.GetReferral(args.Response);
 
-                    OnResponseParsed(args);
+                OnResponseParsed(args);
 
-                    if (!string.IsNullOrEmpty(args.Referral))
-                        return await QueryAsync(obj, args.Referral, false, ct, value);
+                if (!string.IsNullOrEmpty(args.Referral))
+                    return await QueryAsync(obj, args.Referral, false, ct, value);
 
-                    return args.Response;
-                }
-                catch (Exception e)
-                {
-                    args.Exception = e;
-                    OnExceptionThrown(args);
-                    return null;
-                }
-            }, ct);
+                return args.Response;
+            }
+            catch (Exception e)
+            {
+                args.Exception = e;
+                OnExceptionThrown(args);
+                return null;
+            }
         }
 
 
