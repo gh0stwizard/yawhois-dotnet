@@ -184,3 +184,5 @@ ModelManifest.xml
 bin/
 obj/
 *.db
+
+nuget.config
