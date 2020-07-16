@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 3.1.101
     - name: Install dependencies
       run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore --framework netstandard2.0
+    - name: Build YaWhois Library
+      run: dotnet build YaWhois --configuration Release --no-restore --framework netstandard2.0
     - name: Test
-      run: dotnet test --no-restore --verbosity normal --framework netstandard2.0
+      run: dotnet test YaWhois.Tests --no-restore --verbosity normal --framework netstandard2.0
