@@ -3,6 +3,10 @@ name: .NET Core
 on:
   push:
     branches: [ master ]
+    paths: 
+      - '.github/**'
+      - 'YaWhois/**'
+      - 'YaWhois.Tests/**'
   pull_request:
     branches: [ master ]
 
