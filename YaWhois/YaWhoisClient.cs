@@ -86,17 +86,19 @@ namespace YaWhois
         {
             var args = new YaWhoisClientEventArgs() { Value = value };
 
-            lock (QueryParser)
-            {
-                PrepareQuery(obj, server, clearHints);
-                args.Parser = GetDataParser();
-                args.Server = QueryParser.Server;
-                args.Query = QueryParser.ServerQuery;
-                args.Encoding = QueryParser.ServerEncoding;
-            }
-
             try
             {
+                lock (QueryParser)
+                {
+                    PrepareQuery(obj, server, clearHints);
+                    args.Parser = GetDataParser();
+                    args.Server = QueryParser.Server;
+                    args.Query = QueryParser.ServerQuery;
+                    args.Encoding = QueryParser.ServerEncoding;
+                }
+
+                ct.ThrowIfCancellationRequested();
+
                 OnBeforeSendRequest(args);
 
                 args.Response = await FetchAsync(args.Server, args.Query, args.Encoding, ct);
