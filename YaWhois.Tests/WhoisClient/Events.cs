@@ -79,5 +79,49 @@ namespace YaWhois.Tests.WhoisClient
 
             Assert.IsTrue(called);
         }
+
+
+        [Test]
+        public async Task QueryAsync_Canceled_Before_Query()
+        {
+            bool called = false;
+
+            _whois.ExceptionThrown += (o, e) =>
+            {
+                if (e.Exception is OperationCanceledException)
+                    called = true;
+            };
+
+            var cts = new CancellationTokenSource();
+            cts.Cancel();
+
+            await _whois.QueryAsync("ya.ru", token: cts.Token);
+
+            Assert.IsTrue(called);
+        }
+
+
+        [Test]
+        public async Task QueryAsync_Canceled_When_Fetch()
+        {
+            bool called = false;
+
+            _whois.ExceptionThrown += (o, e) =>
+            {
+                if (e.Exception is OperationCanceledException)
+                    called = true;
+            };
+
+            var cts = new CancellationTokenSource();
+            var qtask = _whois.QueryAsync("delay10s.com", token: cts.Token);
+            var delay = Task.Run(async () => {
+                await Task.Delay(1000);
+                cts.Cancel();
+            });
+
+            await Task.WhenAll(qtask, delay);
+
+            Assert.IsTrue(called);
+        }
     }
 }

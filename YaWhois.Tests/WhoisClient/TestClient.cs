@@ -39,13 +39,16 @@ namespace YaWhois.Tests.WhoisClient
 
         protected override Task<string> FetchAsync(string server, string query, Encoding readEncoding, CancellationToken ct)
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 if (query == "exception.com")
                     throw new Exception("test exception");
 
+                if (query == "delay10s.com")
+                    await Task.Delay(10 * 1000, ct);
+
                 return GetResponse(server, query);
-            });
+            }, ct);
         }
     }
 }

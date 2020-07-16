@@ -31,5 +31,24 @@ namespace YaWhois.Tests.WhoisClient
 
             Assert.IsTrue(referrals > 0);
         }
+
+
+        [TestCase("baddomain", Description = "QueryAsync() must not throw any exceptions.")]
+        public void QueryAsync_InvalidObject(string query)
+        {
+            var isError = false;
+
+            _whois.ExceptionThrown += (o, e) =>
+            {
+                if (e.Exception is YaWhois.NoServerException ||
+                    e.Exception is YaWhois.UnknownNetworkException)
+                {
+                    isError = true;
+                }
+            };
+
+            _whois.QueryAsync(query).Wait();
+            Assert.IsTrue(isError);
+        }
     }
 }
