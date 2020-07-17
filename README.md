@@ -72,9 +72,10 @@ whois.QueryAsync("github.com", token: cts.Token);
 // ...
 ```
 
-## Using delegates
 
-All delegates have only two arguments:
+## Event Handlers
+
+All delegates (event handlers) have only two arguments:
 * `object` **sender** (`YaWhoisClient`)
 * `YaWhoisClientEventArgs` **args**
 
@@ -173,6 +174,19 @@ The `Query()` method throws exceptions.
 
 The `QueryAsync()` method does not throws exceptions, instead it calls
 the `WhenExceptionThrown` delegate (see above for details).
+
+
+## Properties
+
+Currently there are only properties for `TcpClient`:
+
+* `ConnectTimeout` (default: 15) - connection timeout in seconds
+* `ReadWriteTimeout` (default: 30) - timeout in seconds for read/write operations
+
+You may adjust any of them at any time, but most useful cases are:
+
+* After initializing `YaWhoisClient` object.
+* With in `WhenRequestReady` delegate depending on query or server values.
 
 
 ## See also
