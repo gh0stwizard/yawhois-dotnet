@@ -28,7 +28,8 @@ namespace YaWhois.Tests.WhoisClient
         }
 
 
-        protected override string Fetch(string server, string query, Encoding readEncoding)
+        protected override string Fetch(string server, string query, Encoding readEncoding,
+            int connectTimeout = 15, int readWriteTimeout = 15)
         {
             if (query == "exception.com")
                 throw new Exception("test exception");
@@ -37,7 +38,9 @@ namespace YaWhois.Tests.WhoisClient
         }
 
 
-        protected override Task<string> FetchAsync(string server, string query, Encoding readEncoding, CancellationToken ct)
+        protected override Task<string> FetchAsync(
+            string server, string query, Encoding readEncoding, CancellationToken ct,
+            int connectTimeout = 15, int readWriteTimeout = 15)
         {
             return Task.Run(async () =>
             {

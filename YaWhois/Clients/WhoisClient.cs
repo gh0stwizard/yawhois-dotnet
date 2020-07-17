@@ -9,13 +9,15 @@ namespace YaWhois.Clients
 {
     public abstract class WhoisClient
     {
+        protected readonly object __locker = new object();
+
         public int ConnectTimeout = 15;
-        public int ReadTimeout = 15;
-        public int WriteTimeout = 15;
-        public int ReadBufferSize = 8192;
+        public int ReadWriteTimeout = 30;
+        private static readonly int ReadBufferSize = 8192;
 
 
-        protected virtual string Fetch(string server, string query, Encoding readEncoding)
+        protected virtual string Fetch(string server, string query, Encoding readEncoding,
+            int connectTimeout = 15, int readWriteTimeout = 15)
         {
             if (string.IsNullOrEmpty(server))
                 throw new ArgumentNullException("server");
@@ -33,13 +35,12 @@ namespace YaWhois.Clients
                 var task = sock.ConnectAsync(host, port);
                 task.ConfigureAwait(false);
 
-                if (!task.Wait(TimeSpan.FromSeconds(ConnectTimeout)))
+                if (!task.Wait(TimeSpan.FromSeconds(connectTimeout)))
                     throw new TimeoutException("connection timeout");
 
                 using (var s = sock.GetStream())
                 {
-                    s.WriteTimeout = 1000 * WriteTimeout;
-                    s.ReadTimeout = 1000 * ReadTimeout;
+                    s.ReadTimeout = s.WriteTimeout = 1000 * readWriteTimeout;
                     var queryBytes = Encoding.ASCII.GetBytes(query + "\r\n");
                     s.Write(queryBytes, 0, queryBytes.Length);
                     s.Flush();
@@ -70,7 +71,8 @@ namespace YaWhois.Clients
 
 
         protected virtual async Task<string> FetchAsync(
-            string server, string query, Encoding readEncoding, CancellationToken ct)
+            string server, string query, Encoding readEncoding, CancellationToken ct,
+            int connectTimeout = 15, int readWriteTimeout = 15)
         {
             if (string.IsNullOrEmpty(server))
                 throw new ArgumentNullException("server");
@@ -86,7 +88,7 @@ namespace YaWhois.Clients
             try
             {
                 var conn_t = sock.ConnectAsync(host, port);
-                var time_t = Task.Delay(1000 * ConnectTimeout, ct);
+                var time_t = Task.Delay(1000 * connectTimeout, ct);
 
                 await Task.WhenAny(conn_t, time_t);
 
@@ -104,8 +106,7 @@ namespace YaWhois.Clients
 
                 using (var s = sock.GetStream())
                 {
-                    s.WriteTimeout = 1000 * WriteTimeout;
-                    s.ReadTimeout = 1000 * ReadTimeout;
+                    s.ReadTimeout = s.WriteTimeout = 1000 * readWriteTimeout;
 
                     var queryBytes = Encoding.ASCII.GetBytes(query + "\r\n");
 

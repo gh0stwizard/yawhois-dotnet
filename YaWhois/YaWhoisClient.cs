@@ -65,9 +65,15 @@ namespace YaWhois
                 args.Encoding = QueryParser.ServerEncoding;
             }
 
-            OnRequestReady(args);
+            int conn_timeout, rdwr_timeout;
+            lock (__locker)
+            {
+                OnRequestReady(args);
+                conn_timeout = ConnectTimeout;
+                rdwr_timeout = ReadWriteTimeout;
+            }
 
-            args.Response = Fetch(args.Server, args.Query, args.Encoding);
+            args.Response = Fetch(args.Server, args.Query, args.Encoding, conn_timeout, rdwr_timeout);
 
             OnResponseReceived(args);
 
@@ -100,9 +106,15 @@ namespace YaWhois
 
                 ct.ThrowIfCancellationRequested();
 
-                OnRequestReady(args);
+                int conn_timeout, rdwr_timeout;
+                lock (__locker)
+                {
+                    OnRequestReady(args);
+                    conn_timeout = ConnectTimeout;
+                    rdwr_timeout = ReadWriteTimeout;
+                }
 
-                args.Response = await FetchAsync(args.Server, args.Query, args.Encoding, ct);
+                args.Response = await FetchAsync(args.Server, args.Query, args.Encoding, ct, conn_timeout, rdwr_timeout);
 
                 OnResponseReceived(args);
 
