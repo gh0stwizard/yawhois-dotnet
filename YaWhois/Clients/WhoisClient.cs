@@ -23,18 +23,19 @@ namespace YaWhois.Clients
             if (string.IsNullOrEmpty(query))
                 throw new ArgumentNullException("query");
 
-            var srvPair = server.Split(new char[] { ':' }, 1);
+            var srvPair = server.Split(new char[] { ':' }, 2);
             var host = srvPair[0];
             var port = srvPair.Length == 2 ? Convert.ToInt32(srvPair[1]) : 43;
             var sock = new TcpClient();
-            var task = sock.ConnectAsync(host, port);
-            task.ConfigureAwait(false);
-
-            if (!task.Wait(TimeSpan.FromSeconds(ConnectTimeout)))
-                return null;
 
             try
             {
+                var task = sock.ConnectAsync(host, port);
+                task.ConfigureAwait(false);
+
+                if (!task.Wait(TimeSpan.FromSeconds(ConnectTimeout)))
+                    throw new TimeoutException("connection timeout");
+
                 using (var s = sock.GetStream())
                 {
                     s.WriteTimeout = 1000 * WriteTimeout;
@@ -56,10 +57,10 @@ namespace YaWhois.Clients
                     return sb.ToString();
                 }
             }
-            catch
+            catch (Exception e)
             {
                 sock.Close();
-                return null;
+                throw e;
             }
             finally
             {
@@ -77,29 +78,30 @@ namespace YaWhois.Clients
             if (string.IsNullOrEmpty(query))
                 throw new ArgumentNullException("query");
 
-            var srvPair = server.Split(new char[] { ':' }, 1);
+            var srvPair = server.Split(new char[] { ':' }, 2);
             var host = srvPair[0];
             var port = srvPair.Length == 2 ? Convert.ToInt32(srvPair[1]) : 43;
             var sock = new TcpClient();
-            var conn_t =  sock.ConnectAsync(host, port);
-            var time_t = Task.Delay(1000 * ConnectTimeout, ct);
-
-            await Task.WhenAny(conn_t, time_t);
-
-            if (!conn_t.IsCompleted)
-            {
-                if (time_t.IsCanceled)
-                    throw new TaskCanceledException();
-
-                throw new TimeoutException("connection timeout");
-            }
-
-            // TODO: localized exceptions... force to english?
-            if (conn_t.IsFaulted)
-                throw conn_t.Exception;
 
             try
             {
+                var conn_t = sock.ConnectAsync(host, port);
+                var time_t = Task.Delay(1000 * ConnectTimeout, ct);
+
+                await Task.WhenAny(conn_t, time_t);
+
+                if (!conn_t.IsCompleted)
+                {
+                    if (time_t.IsCanceled)
+                        throw new TaskCanceledException();
+
+                    throw new TimeoutException("connection timeout");
+                }
+
+                // TODO: localized exceptions... force to english?
+                if (conn_t.IsFaulted)
+                    throw conn_t.Exception;
+
                 using (var s = sock.GetStream())
                 {
                     s.WriteTimeout = 1000 * WriteTimeout;
@@ -125,11 +127,6 @@ namespace YaWhois.Clients
 
                     return sb.ToString();
                 }
-            }
-            catch (Exception e)
-            {
-                sock.Close();
-                throw e;
             }
             finally
             {

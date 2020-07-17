@@ -82,7 +82,8 @@ namespace YaWhois
         }
 
 
-        private async Task<string> QueryAsync(string obj, string server, bool clearHints, CancellationToken ct, object value = null)
+        private async Task<string> QueryAsync(
+            string obj, string server, bool clearHints, CancellationToken ct, object value = null)
         {
             var args = new YaWhoisClientEventArgs() { Value = value };
 
