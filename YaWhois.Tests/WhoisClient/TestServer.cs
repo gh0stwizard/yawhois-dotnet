@@ -34,6 +34,10 @@ namespace YaWhois.Tests.WhoisClient
 
         #region adopted from: https://docs.microsoft.com/en-us/dotnet/framework/network-programming/asynchronous-server-socket-example
 
+
+        private bool IsListening = false;
+
+
         // State object for reading client data asynchronously
         public class StateObject
         {
@@ -65,6 +69,8 @@ namespace YaWhois.Tests.WhoisClient
             listener.Bind(localEndPoint);
             listener.Listen(100);
 
+            IsListening = true;
+
             while (!token.IsCancellationRequested)
             {
                 // Set the event to nonsignaled state.
@@ -81,7 +87,9 @@ namespace YaWhois.Tests.WhoisClient
                 await Task.WhenAny(allDone_t, cancel_t);
             }
 
+            IsListening = false;
             listener.Close();
+            listener.Dispose();
         }
 
 
@@ -89,6 +97,8 @@ namespace YaWhois.Tests.WhoisClient
         {
             // Signal the main thread to continue.
             allDone.Set();
+
+            if (!IsListening) return;
 
             // Get the socket that handles the client request.
             Socket listener = (Socket)ar.AsyncState;
@@ -125,7 +135,8 @@ namespace YaWhois.Tests.WhoisClient
                 content = state.sb.ToString();
                 if (content.IndexOf("\r\n") > -1)
                 {
-                    var args = new TestServerEventArgs() {
+                    var args = new TestServerEventArgs()
+                    {
                         Request = content.TrimEnd(new char[] { '\r', '\n' })
                     };
                     OnRequestReceived(handler, args);
