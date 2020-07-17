@@ -13,6 +13,10 @@ namespace YaWhois.Tests.WhoisClient
         protected YaWhoisClient _whois;
 
 
+        private const string TestServer = "127.0.0.1:7";
+        private const string BadPortServer = "127.0.0.1:123456";
+
+
         [SetUp]
         public void Setup()
         {
@@ -25,50 +29,10 @@ namespace YaWhois.Tests.WhoisClient
         {
             Assert.Throws<ArgumentOutOfRangeException>(delegate
             {
-                _whois.Query("example.com", "127.0.0.1:123456");
+                _whois.Query("example.com", BadPortServer);
             });
         }
 
-
-        [TestCase("127.0.0.1:7")]
-        public void SocketException(string server)
-        {
-            bool gotexception = false;
-
-            try
-            {
-                _whois.Query("example.com", server);
-            }
-            catch (AggregateException ae)
-            {
-                gotexception = ae.InnerExceptions.Any(o => o is SocketException);
-            }
-
-            Assert.IsTrue(gotexception);
-        }
-
-
-        [TestCase("127.0.0.1:7")]
-        public void ConnectionTimeout(string server)
-        {
-            bool gotexception = false;
-
-            try
-            {
-                // This works on Win10. Nothing is known about other cases.
-                _whois.ConnectTimeout = 1;
-                _whois.Query("example.com", server);
-            }
-            catch (TimeoutException)
-            {
-                gotexception = true;
-            }
-
-            Assert.IsTrue(gotexception);
-        }
-
-
-        #region QueryAsync
 
         [Test]
         public async Task BadServerPort_Async()
@@ -81,14 +45,33 @@ namespace YaWhois.Tests.WhoisClient
                     gotexception = true;
             };
 
-            await _whois.QueryAsync("example.com", "127.0.0.1:123456");
+            await _whois.QueryAsync("example.com", BadPortServer);
 
             Assert.IsTrue(gotexception);
         }
 
 
-        [TestCase("127.0.0.1:7")]
-        public async Task SocketException_Async(string server)
+
+        [Test(Description = "Server does not respond.")]
+        public void SocketException()
+        {
+            bool gotexception = false;
+
+            try
+            {
+                _whois.Query("example.com", TestServer);
+            }
+            catch (AggregateException ae)
+            {
+                gotexception = ae.InnerExceptions.Any(o => o is SocketException);
+            }
+
+            Assert.IsTrue(gotexception);
+        }
+
+
+        [Test(Description = "Server does not respond.")]
+        public async Task SocketException_Async()
         {
             bool gotexception = false;
 
@@ -101,14 +84,34 @@ namespace YaWhois.Tests.WhoisClient
                 }
             };
 
-            await _whois.QueryAsync("example.com", server);
+            await _whois.QueryAsync("example.com", TestServer);
 
             Assert.IsTrue(gotexception);
         }
 
 
-        [TestCase("127.0.0.1:7")]
-        public async Task ConnectionTimeout_Async(string server)
+        // This works on Win10. Nothing is known about other cases.
+        [TestCase(IncludePlatform = "Win")]
+        public void ConnectionTimeout()
+        {
+            bool gotexception = false;
+
+            try
+            {
+                _whois.ConnectTimeout = 1;
+                _whois.Query("example.com", TestServer);
+            }
+            catch (TimeoutException)
+            {
+                gotexception = true;
+            }
+
+            Assert.IsTrue(gotexception);
+        }
+
+
+        [TestCase(IncludePlatform = "Win")]
+        public async Task ConnectionTimeout_Async()
         {
             bool gotexception = false;
 
@@ -117,13 +120,10 @@ namespace YaWhois.Tests.WhoisClient
                 gotexception = args.Exception is TimeoutException;
             };
 
-            // This works on Win10. Nothing is known about other cases.
             _whois.ConnectTimeout = 1;
-            await _whois.QueryAsync("example.com", server);
+            await _whois.QueryAsync("example.com", TestServer);
 
             Assert.IsTrue(gotexception);
         }
-
-        #endregion
     }
 }
