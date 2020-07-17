@@ -12,9 +12,9 @@
     <RepositoryUrl>https://github.com/gh0stwizard/yawhois-dotnet.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>whois whois-client</PackageTags>
-    <PackageReleaseNotes>Added net46, net461 target frameworks to nuget package.</PackageReleaseNotes>
+    <PackageReleaseNotes>Major fixes for network client.</PackageReleaseNotes>
     <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
