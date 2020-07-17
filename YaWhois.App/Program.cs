@@ -60,7 +60,7 @@ namespace YaWhois.App
         private static int RunWhois(Options o)
         {
             var whois = new YaWhoisClient();
-            whois.ResponseParsed += Whois_ResponseParsed;
+            whois.WhenResponseParsed += Whois_ResponseParsed;
 
             if (o.UseIANA)
                 o.Server = "whois.iana.org";

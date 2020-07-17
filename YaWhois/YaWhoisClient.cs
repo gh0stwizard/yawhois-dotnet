@@ -44,7 +44,7 @@ namespace YaWhois
         /// <param name="server">A server to connect.</param>
         /// <param name="token">A cancellation token.</param>
         /// <param name="value">An user object.</param>
-        /// <returns>WHOIS server response.</returns>
+        /// <returns>WHOIS server response or null.</returns>
         public Task<string> QueryAsync(
             string obj, string server = null, CancellationToken token = default, object value = null)
         {
@@ -65,11 +65,11 @@ namespace YaWhois
                 args.Encoding = QueryParser.ServerEncoding;
             }
 
-            OnBeforeSendRequest(args);
+            OnRequestReady(args);
 
             args.Response = Fetch(args.Server, args.Query, args.Encoding);
 
-            OnBeforeParseResponse(args);
+            OnResponseReceived(args);
 
             args.Referral = args.Parser.GetReferral(args.Response);
 
@@ -99,11 +99,11 @@ namespace YaWhois
 
                 ct.ThrowIfCancellationRequested();
 
-                OnBeforeSendRequest(args);
+                OnRequestReady(args);
 
                 args.Response = await FetchAsync(args.Server, args.Query, args.Encoding, ct);
 
-                OnBeforeParseResponse(args);
+                OnResponseReceived(args);
 
                 args.Referral = args.Parser.GetReferral(args.Response);
 
@@ -180,50 +180,77 @@ namespace YaWhois
 
         #region Events
 
-        protected virtual void OnBeforeSendRequest(YaWhoisClientEventArgs e)
+        protected virtual void OnRequestReady(YaWhoisClientEventArgs e)
         {
             BeforeSendRequest?.Invoke(this, e);
+            WhenRequestReady?.Invoke(this, e);
         }
 
 
-        protected virtual void OnBeforeParseResponse(YaWhoisClientEventArgs e)
+        protected virtual void OnResponseReceived(YaWhoisClientEventArgs e)
         {
             BeforeParseResponse?.Invoke(this, e);
+            WhenResponseReceived?.Invoke(this, e);
         }
 
 
         protected virtual void OnResponseParsed(YaWhoisClientEventArgs e)
         {
             ResponseParsed?.Invoke(this, e);
+            WhenResponseParsed?.Invoke(this, e);
         }
 
 
         protected virtual void OnExceptionThrown(YaWhoisClientEventArgs e)
         {
             ExceptionThrown?.Invoke(this, e);
+            WhenExceptionThrown?.Invoke(this, e);
         }
+
 
         /// <summary>
         /// Called before connecting to a server.
         /// </summary>
+        [Obsolete("Use WhenRequestReady instead.")]
         public event EventHandler<YaWhoisClientEventArgs> BeforeSendRequest;
+        /// <summary>
+        /// Called before connecting to a server.
+        /// </summary>
+        public event EventHandler<YaWhoisClientEventArgs> WhenRequestReady;
 
         /// <summary>
         /// Called when response from the server has been received,
         /// but before retrieving referral.
         /// </summary>
+        [Obsolete("Use WhenResponseReceived instead.")]
         public event EventHandler<YaWhoisClientEventArgs> BeforeParseResponse;
+        /// <summary>
+        /// Called when response from the server has been received,
+        /// but before retrieving referral.
+        /// </summary>
+        public event EventHandler<YaWhoisClientEventArgs> WhenResponseReceived;
 
         /// <summary>
         /// Called when the server response has been parsed and the referral
         /// filled in.
         /// </summary>
+        [Obsolete("Use WhenResponseParsed instead.")]
         public event EventHandler<YaWhoisClientEventArgs> ResponseParsed;
+        /// <summary>
+        /// Called when the server response has been parsed and the referral
+        /// filled in.
+        /// </summary>
+        public event EventHandler<YaWhoisClientEventArgs> WhenResponseParsed;
 
         /// <summary>
         /// Called only by QueryAsync() method when something goes wrong.
         /// </summary>
+        [Obsolete("Use WhenExceptionThrown instead.")]
         public event EventHandler<YaWhoisClientEventArgs> ExceptionThrown;
+        /// <summary>
+        /// Called only by QueryAsync() method when something goes wrong.
+        /// </summary>
+        public event EventHandler<YaWhoisClientEventArgs> WhenExceptionThrown;
 
         #endregion
     }

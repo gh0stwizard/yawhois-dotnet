@@ -35,7 +35,7 @@ Console.WriteLine(response);
 var whois = new YaWhoisClient();
 
 // set delegate when responses received
-whois.ResponseParsed += Whois_ResponseParsed;
+whois.WhenResponseParsed += Whois_ResponseParsed;
 
 // make request
 whois.Query("github.com");
@@ -43,8 +43,6 @@ whois.Query("github.com");
 
 static void Whois_ResponseParsed(object sender, YaWhoisClientEventArgs e)
 {
-    YaWhoisClient whois = (YaWhoisClient)sender;
-
     Console.WriteLine($"[server: {e.Server}]");
     Console.WriteLine($"[query: {e.Query}]");
     Console.WriteLine(e.Response);
@@ -58,10 +56,10 @@ Same as above, but use `QueryAsync` method instead.
 ```C#
 var whois = new YaWhoisClient();
 
-whois.ResponseParsed += Whois_ResponseParsed;
+whois.WhenResponseParsed += Whois_ResponseParsed;
 
-// additional delegate for async queries
-whois.ExceptionThrown += (o, e) =>
+// QueryAsync() never throws exceptions, so handle exceptions in this way.
+whois.WhenExceptionThrown += (o, e) =>
 {
     Console.WriteLine(e.Exception.Message);
 };
@@ -77,7 +75,7 @@ whois.QueryAsync("github.com", token: cts.Token);
 ## Using delegates
 
 All delegates have only two arguments:
-* `object` **sender** (YaWhoisClient)
+* `object` **sender** (`YaWhoisClient`)
 * `YaWhoisClientEventArgs` **args**
 
 The `YaWhoisClientEventArgs` contains all information about your query:
@@ -107,19 +105,19 @@ static void Whois_Delegate(object sender, YaWhoisClientEventArgs e)
 }
 ```
 
-### BeforeSendRequest
+### WhenRequestReady
 
 This delegate called before request to a server.
 Currently, this delegate has little purposes.
 You may change `IDataParser` **Parser** at this moment.
 
-### BeforeParseResponse
+### WhenResponseReceived
 
-This one called after network request.
+This one called after network request and response has been received.
 You may observe the `string` Response value.
 You still may change `IDataParser` **Parser** at this moment.
 
-### ResponseParsed
+### WhenResponseParsed
 
 This one called after parsing server response to find out
 the value of `Referral`.
@@ -128,7 +126,7 @@ This is last delegate to be called upon successful request.
 
 Changing `IDataParser` **Parser** value will not give any results.
 
-### ExceptionThrown
+### WhenExceptionThrown
 
 This is used only by `QueryAsync()` method.
 When called the exception is set to `Exception` Exception
@@ -147,7 +145,7 @@ An example to query IANA:
 var whois = new YaWhoisClient();
 
 // set delegate when responses received
-whois.ResponseParsed += Whois_ResponseParsed;
+whois.WhenResponseParsed += Whois_ResponseParsed;
 
 // make request to IANA
 whois.Query("github.com", "whois.iana.org");
@@ -174,7 +172,7 @@ There are special exceptions which may be thrown by `YaWhoisClient`:
 The `Query()` method throws exceptions.
 
 The `QueryAsync()` method does not throws exceptions, instead it calls
-the `ExceptionThrown` delegate (see above for details).
+the `WhenExceptionThrown` delegate (see above for details).
 
 
 ## See also

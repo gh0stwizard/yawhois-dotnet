@@ -21,7 +21,7 @@ namespace YaWhois.Tests.WhoisClient
             int referrals = 0;
 
             // this will be called once when there are no referrals.
-            _whois.ResponseParsed += (o, e) =>
+            _whois.WhenResponseParsed += (o, e) =>
             {
                 if (e.Referral != null && e.Referral.Length > 0)
                     referrals++;
@@ -38,7 +38,7 @@ namespace YaWhois.Tests.WhoisClient
         {
             var isError = false;
 
-            _whois.ExceptionThrown += (o, e) =>
+            _whois.WhenExceptionThrown += (o, e) =>
             {
                 if (e.Exception is YaWhois.NoServerException ||
                     e.Exception is YaWhois.UnknownNetworkException)
