@@ -69,9 +69,9 @@
 .af     whois.nic.af
 .ag     whois.nic.ag
 .ai     whois.nic.ai
-.al     NONE            # https://www.akep.al/en/kerkoni-domain-2
+.al     NONE            # www.akep.al
 .am     whois.amnic.net
-.ao     NONE            # www.dns.ao
+.ao     WEB https://www.dns.ao/ao/gca/index.php?id=19  # www.dns.ao
 .aq     NONE            # 2day.com
 .ar     whois.nic.ar
 .as     whois.nic.as
@@ -87,7 +87,7 @@
 .be     whois.dns.be
 .bf     NONE            # http://www.arce.bf/ http://www.onatel.bf/internet/domaine.htm
 .bg     whois.register.bg
-.bh     NONE            # www.inet.com.bh
+.bh     whois.nic.bh
 .bi     whois1.nic.bi
 .bj     whois.nic.bj
 #.bl
@@ -107,7 +107,7 @@
 .cc     VERISIGN ccwhois.verisign-grs.com
 .cd     whois.nic.cd
 .cf     whois.dot.cf
-.cg     NONE
+.cg     NONE            # www.nic.cg
 .ch     whois.nic.ch
 .ci     whois.nic.ci
 .ck     NONE
@@ -120,9 +120,9 @@
 .cr     whois.nic.cr
 .cu     WEB http://www.nic.cu/
 .cv     WEB http://www.dns.cv/
-.cw     NONE            # http://www.uoc.cw/ictssite/index.php/domreg/registering-a-cw-domain/register
+.cw     NONE            # https://www.uoc.cw/cw-registry
 .cx     whois.nic.cx
-.cy     WEB http://www.nic.cy/nslookup/online_database.php
+.cy     WEB https://www.nic.cy/cy-ui/home
 .cz     whois.nic.cz
 .de     whois.denic.de
 .dj     NONE            # http://www.dj/
@@ -181,7 +181,7 @@
 .it     whois.nic.it
 .je     whois.je
 .jm     NONE            # http://myspot.mona.uwi.edu/mits/
-.jo     WEB http://www.dns.jo/Whois.aspx
+.jo     WEB https://www.dns.jo/en.aspx
 .jp     whois.jprs.jp
 .ke     whois.kenic.or.ke
 .kg     whois.kg
@@ -195,7 +195,7 @@
 .ky     whois.kyregistry.ky
 .kz     whois.nic.kz
 .la     whois.nic.la
-.lb     WEB http://www.aub.edu.lb/lbdr/
+.lb     WEB https://web.aub.edu.lb/cgi-bin/lbdr.pl
 .lc     whois2.afilias-grs.net
 .li     whois.nic.li
 .lk     whois.nic.lk
@@ -214,7 +214,7 @@
 .mh     NONE            # www.nic.net.mh
 .mk     whois.marnet.mk
 .ml     whois.dot.ml    # www.point.ml
-.mm     NONE            # www.nic.mm
+.mm     whois.registry.gov.mm
 .mn     whois.nic.mn
 .mo     WEB http://www.monic.mo/        # whois.monic.mo is restricted
 .mp     NONE            # get.mp
@@ -236,7 +236,7 @@
 .ni     WEB http://www.nic.ni/
 .nl     whois.domain-registry.nl
 .no     whois.norid.no
-.np     WEB http://register.mos.com.np/np-whois-lookup
+.np     WEB https://register.com.np/whois-lookup
 .nr     WEB http://www.cenpac.net.nr/dns/whois.html
 .nu     whois.iis.nu
 .nz     whois.srs.net.nz
@@ -262,13 +262,21 @@
 .re     whois.nic.re
 .ro     whois.rotld.ro
 .rs     whois.rnids.rs
+.ac.ru  whois.free.net
 .edu.ru whois.informika.ru
+.com.ru whois.flexireg.net
+.msk.ru whois.flexireg.net
+.net.ru whois.nic.net.ru
+.nov.ru whois.flexireg.net
+.org.ru whois.nic.net.ru
+.pp.ru  whois.nic.net.ru
+.spb.ru whois.flexireg.net
 .ru     whois.tcinet.ru
 .rw     whois.ricta.org.rw      # http://www.ricta.org.rw/
 .sa     whois.nic.net.sa
 .sb     whois.nic.net.sb
 .sc     whois2.afilias-grs.net          # www.nic.sc
-.sd     NONE            # http://wwe.domains.sd/
+.sd     NONE
 .se     whois.iis.se
 .sg     whois.sgnic.sg
 .sh     whois.nic.sh
@@ -282,6 +290,9 @@
 .sr     NONE            # www.register.sr
 .ss     whois.nic.ss
 .st     whois.nic.st
+.msk.su whois.flexireg.net
+.nov.su whois.flexireg.net
+.spb.su whois.flexireg.net
 .su     whois.tcinet.ru
 .sv     WEB http://www.svnet.org.sv/
 .sx     whois.sx
@@ -291,7 +302,7 @@
 .td     whois.nic.td
 .tf     whois.nic.tf
 .tg     whois.nic.tg
-.th     whois.thains.co.th
+.th     whois.thnic.co.th
 .tj     WEB http://www.nic.tj/whois.html
 .tk     whois.dot.tk
 .tl     whois.nic.tl
@@ -382,7 +393,7 @@
 .xn--mgbaam7a8h         whois.aeda.net.ae       # United Arab Emirates
 .xn--mgbah1a3hjkrd      whois.nic.mr            # Mauritania
 .xn--mgbai9azgqp6j      NONE                    # Pakistan
-.xn--mgbayh7gpa         WEB http://idn.jo/whois_a.aspx  # Jordan
+.xn--mgbayh7gpa         WEB https://www.dns.jo/en.aspx  # Jordan
 .xn--mgbbh1a71e         whois.registry.in       # India, Urdu
 .xn--mgbbh1a            whois.registry.in       # India
 .xn--mgbc0a9azcg        NONE                    # Morocco
@@ -394,13 +405,13 @@
 .xn--mgbx4cd0ab         whois.mynic.my          # Malaysia AW
 .xn--mix891f            WEB http://www.monic.mo/ # Macao
 .xn--node               whois.itdc.ge           # Georgia
-.xn--o3cw4h             whois.thains.co.th      # Thailand
+.xn--o3cw4h             whois.thnic.co.th       # Thailand
 .xn--ogbpf8fl           whois.tld.sy            # Syria
 .xn--p1ai               whois.tcinet.ru         # Russian Federation
-.xn--pgbs0dh            NONE                    # Tunisia
+.xn--pgbs0dh            whois.ati.tn            # Tunisia
 .xn--q7ce6a             whois.nic.la            # Lao
 .xn--qxa6a              whois.eu                # European Union, Greek
-.xn--qxam               WEB https://grweb.ics.forth.gr/public/whois.jsp?lang=en # Greece
+.xn--qxam               WEB https://grweb.ics.forth.gr/public/whois # Greece
 .xn--rvc1e0am3e         whois.registry.in       # India
 .xn--s9brj9c            whois.registry.in       # India, Punjabi
 .xn--wgbh1c             whois.dotmasr.eg        # Egypt

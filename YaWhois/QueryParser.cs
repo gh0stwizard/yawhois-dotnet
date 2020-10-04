@@ -225,11 +225,21 @@ namespace YaWhois
                 else if (!isripe && Server == "whois.arin.net" && !Query.Contains(' '))
                 {
                     if (isasn)
+                    {
                         ServerQuery = "a " + Query.Substring(2);
+                    }
                     else if (ServerHint.HasFlag(ServerHints.QUERY_IP))
-                        ServerQuery = "n + " + Query;
+                    {
+                        if (Query.Contains('/'))
+                            // support CIDR queries to whois.arin.net
+                            ServerQuery = "r + = " + Query;
+                        else
+                            ServerQuery = "n + " + Query;
+                    }
                     else
+                    {
                         ServerQuery = Query;
+                    }
                 }
                 else
                 {

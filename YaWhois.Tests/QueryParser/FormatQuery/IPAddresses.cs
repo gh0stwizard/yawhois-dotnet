@@ -55,5 +55,16 @@ namespace YaWhois.Tests.QueryParser.FormatQuery
             Assert.AreEqual("whois.nic.ad.jp", qp.Server);
             Assert.AreEqual($"{value}/e", qp.ServerQuery);
         }
+
+
+        [TestCase("10.0.0.0/8")]
+        [TestCase("8.0.0.0/8")]
+        [TestCase("8.0.0.0/9")]
+        public void CIDR_ipv4(string value)
+        {
+            var qp = _parser.GuessServer(value).FormatQuery();
+            Assert.AreEqual("whois.arin.net", qp.Server);
+            Assert.AreEqual("r + = " + value, qp.ServerQuery);
+        }
     }
 }

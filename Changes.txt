@@ -1,0 +1,2 @@
+1.0.3  Sun 10/04/2020
+  - Applied changes from https://github.com/rfc1036/whois/compare/b7cfb4ef37...7f9fdae2a9

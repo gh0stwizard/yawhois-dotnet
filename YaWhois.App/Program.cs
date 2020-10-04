@@ -86,6 +86,7 @@ namespace YaWhois.App
             {
                 Console.WriteLine($"[server: {e.Server}]");
                 Console.WriteLine($"[query: {e.Query}]");
+                Console.WriteLine($"[encoding: {e.Encoding.WebName}]");
 
                 if (!string.IsNullOrEmpty(e.Referral))
                     Console.WriteLine($"[referral: {e.Referral}]");

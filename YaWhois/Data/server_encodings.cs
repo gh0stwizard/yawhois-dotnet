@@ -73,7 +73,7 @@ namespace YaWhois.Data
             Tuple.Create("whois.sgnic.sg", "utf-8", ""),
             Tuple.Create("whois.tld.sy", "utf-8", ""),
             Tuple.Create("whois.thains.co.th", "utf-8", ""),
-            Tuple.Create("whois.ati.tn", "windows-1252", ""),
+            Tuple.Create("whois.ati.tn", "utf-8", ""),
             Tuple.Create("whois.nic.tr", "iso-8859-9", ""),
             Tuple.Create("whois.twnic.net.tw", "utf-8", ""),
             Tuple.Create("whois.biz.ua", "utf-8", ""),

@@ -74,7 +74,7 @@ namespace YaWhois.Data
                 hint = "Hints.AFILIAS";
                 server = "whois.afilias-grs.info";
             }
-            else if (server == "whois.registry.in")
+            else if (server == "whois.registry.in" || server == "whois.flexireg.net")
             {
                 hint = "Hints.AFILIAS";
             }
