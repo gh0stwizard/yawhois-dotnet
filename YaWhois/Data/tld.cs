@@ -81,7 +81,7 @@ namespace YaWhois.Data
             Tuple.Create("au", Hints.NONE, "whois.auda.org.au"),
             Tuple.Create("aw", Hints.NONE, "whois.nic.aw"),
             Tuple.Create("ax", Hints.NONE, "whois.ax"),
-            Tuple.Create("az", Hints.EXTERNAL, "http://www.nic.az/"),
+            Tuple.Create("az", Hints.EXTERNAL, "http://whois.az/"),
             Tuple.Create("ba", Hints.EXTERNAL, "http://www.nic.ba/stream/whois/"),
             Tuple.Create("bb", Hints.EXTERNAL, "http://whois.telecoms.gov.bb/search_domain.php"),
             Tuple.Create("bd", Hints.EXTERNAL, "http://www.registry.com.bd/whois.php"),
