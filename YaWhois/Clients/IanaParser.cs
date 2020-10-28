@@ -18,7 +18,7 @@ namespace YaWhois.Clients
                 string line;
                 while ((line = r.ReadLine()) != null)
                 {
-                    if (line.StartsWith("refer:"))
+                    if (line.StartsWith(Hint))
                         return line.Substring(Hint.Length + 1).Trim();
                 }
             }
