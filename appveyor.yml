@@ -19,7 +19,7 @@ test_script:
 
 after_test:
   - ps: >-
-      ~/.nuget/packages/opencover/4.7.922/tools/OpenCover.Console.exe -register -filter:"+[*]*" -target:"dotnet.exe" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
+      ~/.nuget/packages/opencover/4.7.922/tools/OpenCover.Console.exe -register:appveyor -filter:"+[*]*" -target:"dotnet.exe" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
 
       ~/.nuget/packages/coveralls.io/1.4.2/tools/coveralls.net.exe --opencover coverage.xml -r %COVERALLS_REPO_TOKEN%
 

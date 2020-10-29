@@ -186,3 +186,6 @@ obj/
 *.db
 
 nuget.config
+
+coverage.xml
+
