@@ -85,6 +85,10 @@ namespace YaWhois.Tests.WhoisClient
                     var ae = (AggregateException)args.Exception;
                     gotexception = ae.InnerExceptions.Any(e => e is SocketException);
                 }
+                else if (args.Exception is SocketException)
+                {
+                    gotexception = true;
+                }
             };
 
             await _whois.QueryAsync("example.com", UnavailableServer);
