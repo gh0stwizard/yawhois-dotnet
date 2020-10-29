@@ -8,18 +8,16 @@ environment:
 
 before_build:
   - nuget restore
+  - choco install opencover.portable
+  - choco install codecov
 
 build_script:
   - ps: >-
       dotnet build YaWhois --configuration Release --no-restore --framework netstandard2.0
 
 test_script:
-  - ps: >-
-      ~/.nuget/packages/opencover/4.7.922/tools/OpenCover.Console.exe -register:appveyor -filter:"+[*]*" -target:"dotnet.exe" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
+  - OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"dotnet.exe" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
 
 after_test:
-  - ps: |
-      $env:PATH = 'C:\msys64\usr\bin;' + $env:PATH
-      Invoke-WebRequest -Uri 'https://codecov.io/bash' -OutFile codecov.sh
-      bash codecov.sh -f "coverage.xml"
+  - codecov -f "coverage.xml"
 
