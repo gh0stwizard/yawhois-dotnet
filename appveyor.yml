@@ -19,5 +19,7 @@ test_script:
 
 after_test:
   - ps: >-
-      packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"dotnet" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
+      dir ~/.nuget/packages
+      dir packages
+      ~/.nuget/packages/opencover/4.7.922/tools/OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"dotnet" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
 
