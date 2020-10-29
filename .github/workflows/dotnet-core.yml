@@ -26,8 +26,4 @@ jobs:
     - name: Build
       run: dotnet build YaWhois --configuration Release --no-restore --framework netstandard2.0
     - name: Test
-      run: dotnet test YaWhois.Tests --no-restore --verbosity normal --framework netstandard2.0
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp2.1
