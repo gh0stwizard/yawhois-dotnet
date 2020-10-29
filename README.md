@@ -1,5 +1,6 @@
 # YaWhois (dotnet) - Yet Another WHOIS Client Library
-
+![build](https://github.com/gh0stwizard/yawhois-dotnet/workflows/.NET%20Core/badge.svg)
+![codecov](https://codecov.io/gh/gh0stwizard/yawhois-dotnet/branch/master/graph/badge.svg?token=KG7XWT8NVR)
 
 ## Description
 
