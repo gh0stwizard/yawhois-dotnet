@@ -1,5 +1,7 @@
 version: 1.0.3.{build}
-
+skip_tags: true
+nuget:
+  disable_publish_on_pr: true
 environment:
   COVERALLS_REPO_TOKEN:
     secure: ORj08JC2naV7S5x3UACc6xvwqgTWjCY0PTgKqX31JByixM3Ou1ChyFMUCJnBVSjt
@@ -8,11 +10,14 @@ before_build:
   - nuget restore
 
 build_script:
-  - dotnet build YaWhois --configuration Release --no-restore --framework netstandard2.0
+  - ps: >-
+      dotnet build YaWhois --configuration Release --no-restore --framework netstandard2.0
 
 test_script:
-  - dotnet test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1
+  - ps: >-
+      dotnet test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1
 
 after_test:
-  - .\packages\opencover\4.7.922\tools\OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"dotnet.exe" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
+  - ps: >-
+      .\packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"dotnet" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
 
