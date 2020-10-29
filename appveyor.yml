@@ -16,7 +16,8 @@ build_script:
       dotnet build YaWhois --configuration Release --no-restore --framework netstandard2.0
 
 test_script:
-  - OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"dotnet.exe" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
+  - ps: >-
+      OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"dotnet.exe" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
 
 after_test:
   - codecov -f "coverage.xml"
