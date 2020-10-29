@@ -1,6 +1,11 @@
 language: csharp
+solution: YaWhois.sln
 mono: none
 dotnet: 2.1.811
+install:
+  - nuget restore YaWhois.sln
+  - nuget install NUnit.Console -Version 3.11.1 -OutputDirectory testrunner
 script:
-  - dotnet restore
+  - msbuild /p:Configuration=Release YaWhois.sln
+  - mono ./testrunner/NUnit.Console.3.11.1/tools/nunit3-console.exe ./YaWhois.Tests/bin/Release/YaWhois.Tests.dll
 
