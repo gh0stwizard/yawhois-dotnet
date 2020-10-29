@@ -1,11 +1,12 @@
 language: csharp
-solution: YaWhois.sln
 mono: none
 dist: xenial
-dotnet: 3.1
+dotnet: 2.2.101
+
 install:
   - dotnet restore
+
 script:
   - dotnet build
-  - dotnet test -f "NETCoreApp2.1"
+  - dotnet test -f netcoreapp2.1
 
