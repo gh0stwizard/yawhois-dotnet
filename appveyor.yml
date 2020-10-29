@@ -17,7 +17,7 @@ build_script:
 
 test_script:
   - ps: >-
-      OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"dotnet.exe" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
+      OpenCover.Console.exe -register:appveyor -filter:"+[*]*" -target:"dotnet.exe" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
 
 after_test:
   - codecov -f "coverage.xml"
