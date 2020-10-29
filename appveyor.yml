@@ -5,12 +5,12 @@ install:
 
 build:
   project: YaWhois.sln
-  verbosity: detailed
+  verbosity: minimal
 
 environment:
   COVERALLS_REPO_TOKEN:
     secure: ORj08JC2naV7S5x3UACc6xvwqgTWjCY0PTgKqX31JByixM3Ou1ChyFMUCJnBVSjt
 
 after_test:
-  - cmd:packages\OpenCover.4.7.922\tools\OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"packages\NUnit.ConsoleRunner.3.11.1\tools\nunit3-console.exe" -targetargs:"/domain:single YaWhois.Tests/bin/debug/YaWhois.Tests.dll" -output:coverage.xml
+  - cmd:packages\opencover\4.7.922\tools\OpenCover.Console.exe -register:user -filter:"+[*]*" -target:"dotnet.exe" -targetargs:"test YaWhois.Tests --no-restore --verbosity normal --framework netcoreapp3.1" -output:coverage.xml
 
