@@ -59,6 +59,10 @@ namespace YaWhois
 #endif
 
 
+        private static readonly Regex GuessServer_Regex_AS = new Regex(
+            "^as[0-9a-zA-Z\\ ]",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
         /// <summary>
         /// Try to guess WHOIS server for specified query object.
         /// </summary>
@@ -107,7 +111,7 @@ namespace YaWhois
             // no dot and no hyphen means it's a NSI NIC handle or ASN (?)
             if (!(Query.Contains('.') || Query.Contains('-')))
             {
-                if (Regex.IsMatch(Query, "^as[0-9a-zA-Z\\ ]", RegexOptions.IgnoreCase))
+                if (GuessServer_Regex_AS.IsMatch(Query))
                     return FindAS(stdlib.strtoul(Query.Substring(2), 10));
 
                 if (Query[0] == '!') /* NSI NIC handle */
@@ -378,10 +382,14 @@ namespace YaWhois
         }
 
 
+        private static readonly Regex Convert6to4_Regex = new Regex(
+            "^2002:([\\da-fA-F]{1,4}):(:|(([\\da-fA-F]{1,4}):))",
+            RegexOptions.Compiled);
+
         static string Convert6to4(string s)
         {
             uint a, b;
-            var m = Regex.Match(s, "^2002:([\\da-fA-F]{1,4}):(:|(([\\da-fA-F]{1,4}):))");
+            var m = Convert6to4_Regex.Match(s);
 
             if (!m.Success)
                 return null;
@@ -393,10 +401,14 @@ namespace YaWhois
         }
 
 
+        private static readonly Regex ConvertTeredo_Regex = new Regex(
+            "^2001:([\\da-fA-F]{1,4}:){5}([\\da-fA-F]{1,4}):([\\da-fA-F]{1,4})$",
+            RegexOptions.Compiled);
+
         static string ConvertTeredo(string s)
         {
             uint a, b;
-            var m = Regex.Match(s, "^2001:([\\da-fA-F]{1,4}:){5}([\\da-fA-F]{1,4}):([\\da-fA-F]{1,4})$");
+            var m = ConvertTeredo_Regex.Match(s);
 
             if (!m.Success)
                 return "0.0.0.0";
@@ -407,6 +419,10 @@ namespace YaWhois
             return string.Format("{0}.{1}.{2}.{3}", a >> 8, a & 0xFF, b >> 8, b & 0xFF);
         }
 
+
+        private static readonly Regex TryParseASN32_Regex = new Regex(
+            "^(\\d+)\\.(\\d+)$",
+            RegexOptions.Compiled);
 
         /// <summary>
         /// Returns true if specified string is valid ASN32, e.g. 123.768.
@@ -421,8 +437,7 @@ namespace YaWhois
             if (string.IsNullOrWhiteSpace(s))
                 return false;
 
-            var r = new Regex("^(\\d+)\\.(\\d+)$");
-            var m = r.Match(s);
+            var m = TryParseASN32_Regex.Match(s);
 
             if (m.Success)
             {
@@ -533,6 +548,10 @@ namespace YaWhois
         }
 
 
+        private static readonly Regex TryParseIPv4_Regex = new Regex(
+            "^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(.)?",
+            RegexOptions.Compiled);
+
         static bool TryParseIPv4(string s, out uint ip)
         {
             ip = 0;
@@ -540,8 +559,7 @@ namespace YaWhois
             if (string.IsNullOrWhiteSpace(s))
                 return false;
 
-            var r = new Regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(.)?");
-            var m = r.Match(s);
+            var m = TryParseIPv4_Regex.Match(s);
 
             if (!m.Success || (m.Groups[5].Success && m.Groups[5].Value != "/"))
                 return false;
@@ -558,9 +576,13 @@ namespace YaWhois
         }
 
 
+        private static readonly Regex ConvertInArpa_Regex = new Regex(
+            "^(\\d{1,3}\\.){1,3}in-addr\\.arpa$",
+            RegexOptions.Compiled);
+
         static string ConvertInArpa(string str)
         {
-            if (!Regex.IsMatch(str, "^(\\d{1,3}\\.){1,3}in-addr\\.arpa$"))
+            if (!ConvertInArpa_Regex.IsMatch(str))
                 return "0.0.0.0";
 
             long[] abc = new long[] { 0, 0, 0 };
@@ -597,11 +619,15 @@ namespace YaWhois
         }
 
 
+        private static readonly Regex ConvertInArpa6_Regex = new Regex(
+            "^([0-9a-f]\\.){1,39}ip6\\.arpa$",
+            RegexOptions.Compiled);
+
         static string ConvertInArpa6(string str)
         {
             var low = str.ToLowerInvariant();
 
-            if (!Regex.IsMatch(low, "^([0-9a-f]\\.){1,39}ip6\\.arpa$"))
+            if (!ConvertInArpa6_Regex.IsMatch(low))
                 return "";
 
             var nibbles = low.Split(new char[] { '.' }).Reverse().ToList();

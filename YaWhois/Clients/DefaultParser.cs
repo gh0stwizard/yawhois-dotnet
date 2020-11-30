@@ -9,6 +9,10 @@ namespace YaWhois.Clients
         private static readonly string ArinHint = "ReferralServer:";
         private static readonly string ReferToHint = "% referto:";
 
+        private static readonly Regex GetReferral_Regex = new Regex(
+            "^% referto: whois -h ([^\\s]{1,255}) -p ([^\\s]{1,15})",
+            RegexOptions.Compiled);
+
 
         public string GetReferral(in string text)
         {
@@ -23,10 +27,9 @@ namespace YaWhois.Clients
                     // TODO: need to find a real example of this case.
                     if (line.StartsWith(ReferToHint))
                     {
-                        var r1 = new Regex("^% referto: whois -h ([^\\s]{1,255}) -p ([^\\s]{1,15})");
-                        var m1 = r1.Match(line);
-                        if (m1.Success)
-                            return m1.Groups[1].Value + ":" + m1.Groups[2].Value;
+                        var m = GetReferral_Regex.Match(line);
+                        if (m.Success)
+                            return m.Groups[1].Value + ":" + m.Groups[2].Value;
                     }
 
                     if (line.StartsWith(ArinHint))
