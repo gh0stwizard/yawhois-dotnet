@@ -1,5 +1,6 @@
-1.0.4
-  - Update the .az TLD URL https://github.com/rfc1036/whois/commit/a58d07dd7e46ff52e9914bfddb7970b7c850e74d
+1.0.4  Mon 11/30/2020
+  - Updated ".az" (https://github.com/rfc1036/whois/commit/a58d07dd7e46ff52e9914bfddb7970b7c850e74d)
+  - Added ".gov.az", updated ".ie" (https://github.com/rfc1036/whois/commit/2586c819f7be89250201ae8063147a76e1dabff3)
 
 1.0.3  Sun 10/04/2020
   - Applied changes from https://github.com/rfc1036/whois/compare/b7cfb4ef37...7f9fdae2a9
