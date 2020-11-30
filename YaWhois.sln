@@ -11,6 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YaWhois.Tests", "YaWhois.Te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{260F822B-7449-463B-A3BF-02A1DD637A93}"
 	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
 		Changes.txt = Changes.txt
 		LICENSE.txt = LICENSE.txt
 		README.md = README.md
