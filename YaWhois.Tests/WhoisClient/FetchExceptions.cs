@@ -18,6 +18,7 @@ namespace YaWhois.Tests.WhoisClient
         private const string UnavailableServer = "127.0.0.1:7";
         private const string LocalServer = "127.0.0.1:8043";
         private const string BadPortServer = "127.0.0.1:123456";
+        private const string InvalidPortServer = "127.0.0.1:abc";
 
 
         [SetUp]
@@ -53,6 +54,32 @@ namespace YaWhois.Tests.WhoisClient
             Assert.IsTrue(gotexception);
         }
 
+
+        [Test]
+        public void InvalidServerPort()
+        {
+            Assert.Throws<FormatException>(delegate
+            {
+                _whois.Query("example.com", InvalidPortServer);
+            });
+        }
+
+
+        [Test]
+        public async Task InvalidServerPort_Async()
+        {
+            bool gotexception = false;
+
+            _whois.WhenExceptionThrown += (o, e) =>
+            {
+                if (e.Exception is FormatException)
+                    gotexception = true;
+            };
+
+            await _whois.QueryAsync("example.com", InvalidPortServer);
+
+            Assert.IsTrue(gotexception);
+        }
 
 
         [Test(Description = "Server does not respond.")]
