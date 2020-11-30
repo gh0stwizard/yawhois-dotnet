@@ -19,6 +19,14 @@ namespace YaWhois.Tests.QueryParser.GuessServer
         }
 
 
+        [TestCase("test.bz")]
+        public void ServerHint_AFILIAS(string value)
+        {
+            var qp = _parser.GuessServer(value);
+            Assert.IsTrue(qp.ServerHint.HasFlag(YaWhois.QueryParser.ServerHints.AFILIAS));
+        }
+
+
         [TestCase("redmond.company")]
         [TestCase("dig.watch")]
         public void gTLD(string value)
@@ -59,6 +67,7 @@ namespace YaWhois.Tests.QueryParser.GuessServer
 
         [TestCase(".jp")]
         [TestCase("a")]
+        [TestCase("test.mil", Description = "TLD has no whois server")]
         public void NoServerException(string value)
         {
             Assert.Throws<YaWhois.NoServerException>(delegate

@@ -16,6 +16,7 @@ namespace YaWhois.Tests.QueryParser.GuessServer
 
 
         [TestCase("as0")]
+        [TestCase("as1.0", Description = "Assignments.AS32")]
         [TestCase("as65535")]
         public void UnknownNetworkException(string value)
         {
