@@ -8,6 +8,16 @@ namespace YaWhois.Tests.QueryParser.FormatQuery
 {
     public class Domains : BaseClass
     {
+        [Test(Description = "Dumb case: call FormatQuery() before GuessServer().")]
+        public void NullEmptyException()
+        {
+            Assert.Throws<ArgumentNullException>(delegate
+            {
+                _parser.FormatQuery();
+            });
+        }
+
+
         [TestCase("mail.de")]
         public void Passed_denic_de(string value)
         {
@@ -38,6 +48,15 @@ namespace YaWhois.Tests.QueryParser.FormatQuery
         {
             var qp = _parser.GuessServer(value).FormatQuery();
             Assert.AreEqual(value, qp.ServerQuery);
+        }
+
+
+        [TestCase("unusual-case")]
+        public void ARIN_NotRipe_NotASN_NotIP(string value)
+        {
+            var qp = _parser.GuessServer(value).FormatQuery();
+            Assert.AreEqual(value, qp.ServerQuery);
+            Assert.AreEqual("whois.arin.net", qp.Server);
         }
     }
 }
