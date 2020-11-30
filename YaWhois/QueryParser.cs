@@ -305,6 +305,7 @@ namespace YaWhois
                     else
                         throw new NoServerException();
 
+                // test coverage: currently no such case
                 case '\x06':
                     throw new UnknownNetworkException();
 
@@ -383,7 +384,7 @@ namespace YaWhois
             var m = Regex.Match(s, "^2002:([\\da-fA-F]{1,4}):(:|(([\\da-fA-F]{1,4}):))");
 
             if (!m.Success)
-                return "0.0.0.0";
+                return null;
 
             a = Convert.ToUInt32(m.Groups[1].Value, 16);
             b = m.Groups[4].Success ? Convert.ToUInt32(m.Groups[4].Value, 16) : 0;
@@ -535,6 +536,10 @@ namespace YaWhois
         static bool TryParseIPv4(string s, out uint ip)
         {
             ip = 0;
+
+            if (string.IsNullOrWhiteSpace(s))
+                return false;
+
             var r = new Regex("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})(.)?");
             var m = r.Match(s);
 
