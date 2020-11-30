@@ -2,9 +2,6 @@ version: 1.0.3.{build}
 skip_tags: true
 nuget:
   disable_publish_on_pr: true
-environment:
-  COVERALLS_REPO_TOKEN:
-    secure: ORj08JC2naV7S5x3UACc6xvwqgTWjCY0PTgKqX31JByixM3Ou1ChyFMUCJnBVSjt
 
 before_build:
   - nuget restore
