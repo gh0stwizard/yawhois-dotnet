@@ -19,7 +19,8 @@ namespace YaWhois.Tests.QueryParser.GuessServer
         [TestCase("300.1.2.3")]
         public void NoServerException(string value)
         {
-            Assert.Throws<YaWhois.NoServerException>(delegate {
+            Assert.Throws<YaWhois.NoServerException>(delegate
+            {
                 _parser.GuessServer(value);
             });
         }

@@ -29,7 +29,8 @@ namespace YaWhois.Tests.WhoisClient
             var cts = new CancellationTokenSource();
             var ct = cts.Token;
 
-            var server_t = Task.Run(async () => {
+            var server_t = Task.Run(async () =>
+            {
                 var server = new TestServer();
 
                 server.WhenRequestReceived += (o, args) =>

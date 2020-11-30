@@ -114,7 +114,8 @@ namespace YaWhois.Tests.WhoisClient
 
             var cts = new CancellationTokenSource();
             var qtask = _whois.QueryAsync("delay10s.com", token: cts.Token);
-            var delay = Task.Run(async () => {
+            var delay = Task.Run(async () =>
+            {
                 await Task.Delay(1000);
                 cts.Cancel();
             });

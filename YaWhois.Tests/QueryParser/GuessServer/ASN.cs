@@ -19,7 +19,8 @@ namespace YaWhois.Tests.QueryParser.GuessServer
         [TestCase("as65535")]
         public void UnknownNetworkException(string value)
         {
-            Assert.Throws<YaWhois.UnknownNetworkException>(delegate {
+            Assert.Throws<YaWhois.UnknownNetworkException>(delegate
+            {
                 _parser.GuessServer(value);
             });
         }
