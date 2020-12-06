@@ -1,3 +1,7 @@
+1.0.5  Sun 12/06/2020
+  - Optimized regular expressions
+  - Minor fixes
+
 1.0.4  Mon 11/30/2020
   - Updated ".az" (https://github.com/rfc1036/whois/commit/a58d07dd7e46ff52e9914bfddb7970b7c850e74d)
   - Added ".gov.az", updated ".ie" (https://github.com/rfc1036/whois/commit/2586c819f7be89250201ae8063147a76e1dabff3)
