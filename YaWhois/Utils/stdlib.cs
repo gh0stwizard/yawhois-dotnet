@@ -31,7 +31,7 @@ namespace YaWhois.Utils
     // strtol:
     //   1. http://git.musl-libc.org/cgit/musl/tree/src/stdlib/strtol.c
     //   2. http://git.musl-libc.org/cgit/musl/tree/src/internal/intscan.c
-    internal static unsafe class stdlib
+    public static unsafe class stdlib
     {
         // TODO: thread-safety?
         public static int errno;
@@ -43,12 +43,6 @@ namespace YaWhois.Utils
             EINVAL,
             ERANGE
         }
-
-
-        /// <summary>
-        /// 0UL + LONG_MIN: no critic.
-        /// </summary>
-        private const ulong UL_LONG_MIN = 9223372036854775808;
 
 
         // table moved forward by 1 due C# lacks support of things like that:
@@ -140,9 +134,9 @@ namespace YaWhois.Utils
                     y = y * 10 + c - '0';
                 if (((uint)c - '0') >= 10u) goto done;
             }
-            else if ((@base & (@base - 1)) > 0)
+            else if ((@base & @base - 1) == 0) // bases: 2, 4, 8, 16, 32
             {
-                int bs = "\0\x31\x32\x34\x37\x33\x36\x35"[(0x17 * (int)@base) >> 5 & 7];
+                int bs = "\0\x01\x02\x04\x07\x03\x06\x05"[(0x17 * (int)@base) >> 5 & 7];
                 for (x = 0; table[c] < @base && x <= uint.MaxValue / 32; c = (byte)f.ReadByte())
                     x = x << bs | table[c];
                 for (y = x; table[c] < @base && y <= ulong.MaxValue >> bs; c = (byte)f.ReadByte())
@@ -216,12 +210,12 @@ namespace YaWhois.Utils
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long strtol(string s, out long end, int @base)
         {
-            return (long)strtox(s, out end, @base, UL_LONG_MIN);
+            return (long)strtox(s, out end, @base, long.MaxValue);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long strtol(string s, int @base)
         {
-            return (long)strtox(s, out long _, @base, UL_LONG_MIN);
+            return (long)strtox(s, out long _, @base, long.MaxValue);
         }
 
 
