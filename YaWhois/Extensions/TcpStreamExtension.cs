@@ -8,8 +8,6 @@ namespace YaWhois.Extensions
     {
         public static async Task<int> ReadAsyncWithTimeout(this NetworkStream stream, byte[] buffer, int offset, int count)
         {
-            if (!stream.CanRead) return 0;
-
             var read_t = stream.ReadAsync(buffer, offset, count);
             var wait_t = Task.Delay(stream.ReadTimeout);
             await Task.WhenAny(read_t, wait_t);
