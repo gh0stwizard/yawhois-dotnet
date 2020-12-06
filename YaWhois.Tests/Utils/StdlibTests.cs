@@ -56,7 +56,7 @@ namespace YaWhois.Tests.Utils
         public void InvalidBaseUnsigned(int @base)
         {
             stdlib.errno = 0;
-            var r = stdlib.strtol(Number, out long end, @base);
+            var r = stdlib.strtoul(Number, out long end, @base);
             Assert.AreEqual(0, r);
             Assert.AreEqual(0, end);
             Assert.AreEqual((int)stdlib.ErrorCodes.EINVAL, stdlib.errno);
