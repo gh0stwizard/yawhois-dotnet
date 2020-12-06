@@ -20,10 +20,10 @@ namespace YaWhois.Clients
             int connectTimeout = 15, int readWriteTimeout = 15)
         {
             if (string.IsNullOrEmpty(server))
-                throw new ArgumentNullException("server");
+                throw new ArgumentNullException(nameof(server));
 
             if (string.IsNullOrEmpty(query))
-                throw new ArgumentNullException("query");
+                throw new ArgumentNullException(nameof(query));
 
             var srvPair = server.Split(new char[] { ':' }, 2);
             var host = srvPair[0];
@@ -75,10 +75,10 @@ namespace YaWhois.Clients
             int connectTimeout = 15, int readWriteTimeout = 15)
         {
             if (string.IsNullOrEmpty(server))
-                throw new ArgumentNullException("server");
+                throw new ArgumentNullException(nameof(server));
 
             if (string.IsNullOrEmpty(query))
-                throw new ArgumentNullException("query");
+                throw new ArgumentNullException(nameof(query));
 
             var srvPair = server.Split(new char[] { ':' }, 2);
             var host = srvPair[0];

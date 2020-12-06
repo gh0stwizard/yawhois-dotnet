@@ -21,19 +21,22 @@ namespace YaWhois.Clients
                 string line;
                 while ((line = r.ReadLine()) != null)
                 {
-                    if (state == 0 && line.StartsWith(DomainHint))
+                    if (state == 0)
                     {
-                        state = 1;
-                        continue;
-                    }
-                    else if (state == 0 && line.StartsWith(ServerHint))
-                    {
-                        state = 2;
-                        return string.Empty;
-                    }
+                        if (line.StartsWith(DomainHint))
+                        {
+                            state = 1;
+                            continue;
+                        }
 
-                    if (state == 1 && line.StartsWith(WhoisHint))
-                        return line.Substring(WhoisHint.Length + 1).Trim();
+                        if (line.StartsWith(ServerHint))
+                            break; // return null
+                    }
+                    else if (state == 1)
+                    {
+                        if (line.StartsWith(WhoisHint))
+                            return line.Substring(WhoisHint.Length + 1).Trim();
+                    }
                 }
             }
 
