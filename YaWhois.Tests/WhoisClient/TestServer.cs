@@ -15,6 +15,9 @@ namespace YaWhois.Tests.WhoisClient
             public string Request { get; internal set; }
             public string Response { get; set; }
             public int DelayResponse { get; set; }
+            public bool SplitResponse { get; set; }
+            public int SplitResponseChunks { get; set; }
+            public int SplitResponseDelay { get; set; }
         }
 
 
@@ -25,7 +28,14 @@ namespace YaWhois.Tests.WhoisClient
             if (e.DelayResponse > 0)
                 Thread.Sleep(1000 * e.DelayResponse);
 
-            Send(handler, e.Response ?? string.Empty);
+            if (e.SplitResponse)
+            {
+                SendChunks(handler, e.Response ?? string.Empty, e.SplitResponseChunks, e.SplitResponseDelay);
+            }
+            else
+            {
+                Send(handler, e.Response ?? string.Empty);
+            }
         }
 
 
@@ -170,6 +180,77 @@ namespace YaWhois.Tests.WhoisClient
 
             handler.Shutdown(SocketShutdown.Both);
             handler.Close();
+        }
+
+
+        private class ChunkResponseState
+        {
+            public Socket Handler;
+            public string Data;
+            public int Current;
+            public int Total;
+            public int SleepMilliseconds;
+        }
+
+        private static void SendChunks(Socket handler, string data, int chunks, int sleepMs)
+        {
+            var state = new ChunkResponseState
+            {
+                Handler = handler,
+                Data = data,
+                Current = 1,
+                SleepMilliseconds = sleepMs
+            };
+
+            byte[] byteData = Encoding.ASCII.GetBytes(data);
+
+            if (chunks <= 1)
+            {
+                handler.BeginSend(byteData, 0, byteData.Length, 0,
+                    new AsyncCallback(SendChunkCallback), state);
+            }
+            else
+            {
+                if (byteData.Length < chunks)
+                {
+                    handler.BeginSend(byteData, 0, byteData.Length, 0,
+                        new AsyncCallback(SendChunkCallback), state);
+                }
+                else
+                {
+                    state.Total = chunks;
+                    handler.BeginSend(byteData, 0, byteData.Length / chunks, 0,
+                        new AsyncCallback(SendChunkCallback), state);
+                }
+            }
+        }
+
+        private static void SendChunkCallback(IAsyncResult ar)
+        {
+            ChunkResponseState state = (ChunkResponseState)ar.AsyncState;
+            Socket handler = state.Handler;
+            int bytesSent = handler.EndSend(ar);
+
+            if (state.Current < state.Total)
+            {
+                byte[] byteData = Encoding.ASCII.GetBytes(state.Data);
+                var offset = byteData.Length / state.Total;
+                var length = offset * state.Current;
+                if (state.Total - state.Current == 1)
+                    length = byteData.Length - length;
+                state.Current++;
+
+                if (state.SleepMilliseconds > 0)
+                    Thread.Sleep(state.SleepMilliseconds);
+
+                handler.BeginSend(byteData, offset, length, 0,
+                    new AsyncCallback(SendChunkCallback), state);
+            }
+            else
+            {
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+            }
         }
     }
 
