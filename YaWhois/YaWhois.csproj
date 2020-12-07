@@ -153,4 +153,30 @@
     </Compile>
   </ItemGroup>
 
+  <!-- Automatically regenerate T4 templates on build in Visual Studio.
+       This is only for the package developer and not for automated builds. -->
+  <PropertyGroup Condition="'$(MSBuildRuntimeType)'=='Full'">
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <BeforeTransform>CustomPreTransform</BeforeTransform>
+    <TransformOnBuild>true</TransformOnBuild>
+  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets"
+          Condition="'$(MSBuildRuntimeType)' == 'Full'" />
+  <!-- Workaround for T4: tasks TransformTemplates, PreprocessTemplates don't pass this variable to a template.
+       Pass it manually. -->
+  <PropertyGroup>
+    <__NuGetPackageRoot>$(NuGetPackageRoot)</__NuGetPackageRoot>
+  </PropertyGroup>
+  <ItemGroup>
+    <T4ParameterValues Include="__NuGetPackageRoot">
+      <Value>$(NuGetPackageRoot)</Value>
+      <Visible>false</Visible>
+    </T4ParameterValues>
+  </ItemGroup>
+  <!-- There are could be many target frameworks. For each of them would be generated its own code.
+       This is just for debug. -->
+  <Target Name="CustomPreTransform">
+    <Message Text="Generating templates for Configuration = $(Configuration); Platform = $(Platform); Framework = $(TargetFramework)" Importance="High" />
+  </Target>
 </Project>
