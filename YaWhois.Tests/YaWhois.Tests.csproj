@@ -33,6 +33,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="WhoisClient\Resources\Afilias.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Afilias.resx</DependentUpon>
+    </Compile>
+    <Compile Update="WhoisClient\Resources\ARIN.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ARIN.resx</DependentUpon>
+    </Compile>
+    <Compile Update="WhoisClient\Resources\CrsNic.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CrsNic.resx</DependentUpon>
+    </Compile>
     <Compile Update="WhoisClient\Resources\General.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -46,6 +61,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="WhoisClient\Resources\Afilias.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Afilias.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="WhoisClient\Resources\ARIN.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ARIN.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="WhoisClient\Resources\CrsNic.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CrsNic.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="WhoisClient\Resources\General.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>General.Designer.cs</LastGenOutput>

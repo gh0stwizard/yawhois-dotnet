@@ -15,7 +15,10 @@ namespace YaWhois.Tests.WhoisClient
         }
 
 
-        [TestCase("ya.ru", "whois.iana.org")]
+        [TestCase("ya.ru", "whois.iana.org", Description = "IanaParser")]
+        [TestCase("67.227.191.5", null, Description = "DefaultParser")]
+        [TestCase("mail.bz", null, Description = "AfiliasParser")]
+        [TestCase("mail.com", null, Description = "CrsNicParser")]
         public void Referrals(string query, string server)
         {
             int referrals = 0;

@@ -11,7 +11,10 @@ namespace YaWhois.Tests.WhoisClient
     {
         private readonly static Dictionary<string, Type> ResourceMap = new Dictionary<string, Type>()
         {
-            {  "whois.iana.org", typeof(Resources.IanaOrg) },
+            { "whois.iana.org", typeof(Resources.IanaOrg) },
+            { "whois.arin.net", typeof(Resources.ARIN) },
+            { "whois.afilias-grs.info", typeof(Resources.Afilias) },
+            { "whois.verisign-grs.com", typeof(Resources.CrsNic) },
         };
 
 
