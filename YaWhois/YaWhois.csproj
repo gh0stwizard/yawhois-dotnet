@@ -81,22 +81,27 @@
     <None Update="Data\as16.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>as16.cs</LastGenOutput>
+      <DependentUpon>as16.txt</DependentUpon>
     </None>
     <None Update="Data\as32.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>as32.cs</LastGenOutput>
+      <DependentUpon>as32.txt</DependentUpon>
     </None>
     <None Update="Data\gtld.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>gtld.cs</LastGenOutput>
+      <DependentUpon>gtld.txt</DependentUpon>
     </None>
     <None Update="Data\ipv4.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ipv4.cs</LastGenOutput>
+      <DependentUpon>ipv4.txt</DependentUpon>
     </None>
     <None Update="Data\ipv6.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ipv6.cs</LastGenOutput>
+      <DependentUpon>ipv6.txt</DependentUpon>
     </None>
     <None Update="Data\nic.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -105,10 +110,12 @@
     <None Update="Data\server_encodings.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>server_encodings.cs</LastGenOutput>
+      <DependentUpon>server_encodings.txt</DependentUpon>
     </None>
     <None Update="Data\tld.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>tld.cs</LastGenOutput>
+      <DependentUpon>tld.txt</DependentUpon>
     </None>
   </ItemGroup>
 
