@@ -152,7 +152,6 @@ whois.WhenResponseParsed += Whois_ResponseParsed;
 // make request to IANA
 whois.Query("github.com", "whois.iana.org");
 
-
 // This delegate will be called for whois.iana.org response
 // and a referral one (if it exists).
 static void Whois_ResponseParsed(object sender, YaWhoisClientEventArgs e)
@@ -161,6 +160,48 @@ static void Whois_ResponseParsed(object sender, YaWhoisClientEventArgs e)
     Console.WriteLine();
     Console.WriteLine(e.Response);
 }
+```
+
+An example how to disable recursive queries to all servers:
+```C#
+// Alternatively this could be done inside of WhenResponseReceived
+whois.WhenRequestReady += (o, e) =>
+{
+    e.Parser = null; // since 1.0.6 version
+};
+```
+
+For the `YaWhois` before 1.0.6 version use this approach:
+```C#
+class MyDummyParser : YaWhois.Clients.IDataParser
+{
+    public string GetReferral(in string text)
+    {
+        return null;
+    }
+}
+
+whois.WhenRequestReady += (o, e) =>
+{
+    e.Parser = new MyDummyParser();
+};
+```
+
+Another way per a server (since 1.0.6 version):
+```C#
+var whois = new YaWhoisClient();
+
+// This also could be done between queries and in delegates.
+whois.RegisterParserByServer("whois.iana.org", null);
+whois.RegisterParserByServer("whois.arin.net", null);
+
+whois.Query("github.com", "whois.iana.org");
+whois.Query("67.227.191.5"); // whois.arin.net
+```
+
+To remove the parser per server use the `UnregisterParserByServer()` method:
+```C#
+whois.UnregisterParserByServer("whois.arin.net");
 ```
 
 

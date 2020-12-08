@@ -1,6 +1,7 @@
 1.0.6  Tue 12/08/2020
   - Removed unnecessary dependicies form nuget package
   - Minor fixes
+  - Added new methods RegisterParserByServer(), UnregisterParserByServer()
 
 1.0.5  Sun 12/06/2020
   - Optimized regular expressions
