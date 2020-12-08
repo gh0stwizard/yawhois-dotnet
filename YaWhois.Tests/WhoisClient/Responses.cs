@@ -114,5 +114,38 @@ namespace YaWhois.Tests.WhoisClient
 
             Assert.AreEqual(0, referrals);
         }
+
+
+        [TestCase("ya.ru", "whois.iana.org")]
+        [TestCase("mail.bz", null, Description = "AFILIAS")]
+        [TestCase("67.227.191.5", null, Description = "ARIN / DefaultParser")]
+        public void AddRemoveParsers03(string query, string server)
+        {
+            int referrals = 0;
+
+            // the standard case
+            _whois.WhenResponseParsed += (o, e) =>
+            {
+                if (e.Referral != null && e.Referral.Length > 0)
+                    referrals++;
+            };
+            _whois.Query(query, server);
+
+            // for all servers
+            _whois.WhenRequestReady += (o, e) =>
+            {
+                e.Parser = null;
+            };
+
+            // now decrement the referrals value
+            _whois.WhenResponseParsed += (o, e) =>
+            {
+                if (e.Referral == null)
+                    referrals--;
+            };
+            _whois.Query(query, server);
+
+            Assert.AreEqual(0, referrals);
+        }
     }
 }
