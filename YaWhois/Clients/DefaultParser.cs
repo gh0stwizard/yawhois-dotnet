@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace YaWhois.Clients
 {
-    class DefaultParser : IDataParser
+    public class DefaultParser : IDataParser
     {
         private static readonly string ArinHint = "ReferralServer:";
         private static readonly string ReferToHint = "% referto:";

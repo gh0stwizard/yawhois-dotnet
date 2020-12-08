@@ -3,7 +3,7 @@ using System.IO;
 
 namespace YaWhois.Clients
 {
-    class IanaParser : IDataParser
+    public class IanaParser : IDataParser
     {
         private static readonly string Hint = "refer:";
 

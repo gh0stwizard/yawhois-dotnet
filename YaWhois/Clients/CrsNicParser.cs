@@ -3,7 +3,7 @@ using System.IO;
 
 namespace YaWhois.Clients
 {
-    class CrsNicParser : IDataParser
+    public class CrsNicParser : IDataParser
     {
         private static readonly string DomainHint = "   Domain Name:";
         private static readonly string ServerHint = "   Server Name:";

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace YaWhois.Clients
 {
-    class AfiliasParser : IDataParser
+    public class AfiliasParser : IDataParser
     {
         private static readonly string Hint = "Registrar WHOIS Server:";
 
