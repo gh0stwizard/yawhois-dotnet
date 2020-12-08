@@ -9,20 +9,20 @@ namespace YaWhois
     public class YaWhoisClient : WhoisClient
     {
         QueryParser QueryParser { get; set; }
-
-
-        // TODO: add function to register custom parsers.
-        Dictionary<string, Type> DataParsersByServer = new Dictionary<string, Type>()
-        {
-            { "whois.iana.org", typeof(IanaParser) },
-        };
-
+        Dictionary<string, IDataParser> DataParserByServer { get; set; }
 
         public YaWhoisClient()
         {
             QueryParser = new QueryParser();
+            DataParserByServer = new Dictionary<string, IDataParser>()
+            {
+                // Probably this is not the best way for this case.
+                // As an alternative, set the ServerHint to IANA (in FormatQuery?).
+                { "whois.iana.org", new IanaParser() }
+            };
         }
 
+        #region public methods
 
         /// <summary>
         /// Make WHOIS request synchronously.
@@ -30,7 +30,9 @@ namespace YaWhois
         /// <param name="obj">A query object.</param>
         /// <param name="server">A server to connect.</param>
         /// <param name="value">An user object.</param>
-        /// <returns>WHOIS server response.</returns>
+        /// <returns>WHOIS server response or null.
+        /// If there was a recursion then returns last response.
+        /// </returns>
         public string Query(string obj, string server = null, object value = null)
         {
             return Query(obj, server, true, value);
@@ -44,12 +46,52 @@ namespace YaWhois
         /// <param name="server">A server to connect.</param>
         /// <param name="token">A cancellation token.</param>
         /// <param name="value">An user object.</param>
-        /// <returns>WHOIS server response or null.</returns>
+        /// <returns>WHOIS server response or null.
+        /// If there was a recursion then returns last response.
+        /// </returns>
         public Task<string> QueryAsync(
             string obj, string server = null, CancellationToken token = default, object value = null)
         {
             return QueryAsync(obj, server, true, token, value);
         }
+
+
+        /// <summary>
+        /// Registers a new <see cref="IDataParser"/> parser for the specified server.
+        /// </summary>
+        /// <param name="server">A whois server.</param>
+        /// <param name="dataParser">A <see cref="IDataParser"/> object.
+        /// The value could be null, in that case the step to find a referral would be skipped.
+        /// </param>
+        /// <param name="replace">When true replaces existing parser for the server.
+        /// Otherwise the <see cref="ArgumentException"/> would be thrown if the server exists.
+        /// </param>
+        public void RegisterParserByServer(string server, IDataParser dataParser, bool replace = true)
+        {
+            if (!string.IsNullOrWhiteSpace(server))
+            {
+                if (replace && DataParserByServer.ContainsKey(server))
+                    DataParserByServer.Remove(server);
+
+                DataParserByServer.Add(server, dataParser);
+            }
+        }
+
+
+        /// <summary>
+        /// Removes a parser to the specified server.
+        /// </summary>
+        /// <param name="server">A whois server.</param>
+        /// <returns>True when a parser was found.</returns>
+        public bool UnregisterParserByServer(string server)
+        {
+            if (!string.IsNullOrWhiteSpace(server))
+                return DataParserByServer.Remove(server);
+
+            return false;
+        }
+
+        #endregion
 
 
         private string Query(string obj, string server, bool clearHints, object value)
@@ -77,7 +119,10 @@ namespace YaWhois
 
             OnResponseReceived(args);
 
-            args.Referral = args.Parser.GetReferral(args.Response);
+            if (args.Parser != null)
+                args.Referral = args.Parser.GetReferral(args.Response);
+            else
+                args.Referral = null;
 
             OnResponseParsed(args);
 
@@ -118,7 +163,10 @@ namespace YaWhois
 
                 OnResponseReceived(args);
 
-                args.Referral = args.Parser.GetReferral(args.Response);
+                if (args.Parser != null)
+                    args.Referral = args.Parser.GetReferral(args.Response);
+                else
+                    args.Referral = null;
 
                 OnResponseParsed(args);
 
@@ -138,13 +186,14 @@ namespace YaWhois
 
         private void PrepareQuery(string obj, string server, bool clearHints)
         {
-            // FIXME: do we need really call this again in recursion?
-            QueryParser.GuessServer(obj);
+            // The QueryParser object is shared across all threads.
+            // Skip unnecassary parsing again when possible.
+            if (QueryParser.OriginalQuery == null || QueryParser.OriginalQuery != obj)
+                QueryParser.GuessServer(obj);
 
             if (!string.IsNullOrEmpty(server))
             {
                 QueryParser.Server = server;
-                QueryParser.Query = obj;
 
                 // Clear server hints for GetDataParser().
                 if (clearHints)
@@ -155,8 +204,9 @@ namespace YaWhois
                 }
             }
 
-            // Generate QueryParser.ServerQuery.
-            // Especially this is needed when QueryParser.Query was changed above.
+            // Generate a new value of QueryParser.ServerQuery.
+            // Unlikely that we repeat the same job until there are two or more Query()
+            // requests with the same object.
             QueryParser.FormatQuery();
         }
 
@@ -189,8 +239,8 @@ namespace YaWhois
                     break;
 
                 default:
-                    if (DataParsersByServer.TryGetValue(QueryParser.Server, out Type datatype))
-                        parser = (IDataParser)Activator.CreateInstance(datatype);
+                    if (DataParserByServer.TryGetValue(QueryParser.Server, out IDataParser dataParser))
+                        parser = dataParser;
                     else
                         parser = DataParserByHint[QueryParser.ServerHints.NONE];
                     break;

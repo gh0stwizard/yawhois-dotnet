@@ -11,6 +11,11 @@ namespace YaWhois
     public class QueryParser
     {
         /// <summary>
+        /// Original query (as is).
+        /// </summary>
+        public string OriginalQuery { get; internal set; }
+
+        /// <summary>
         /// Normalized query.
         /// </summary>
         public string Query { get; internal set; }
@@ -73,6 +78,7 @@ namespace YaWhois
             if (string.IsNullOrWhiteSpace(obj))
                 throw new ArgumentException("Empty query.");
 
+            OriginalQuery = obj;
             Query = Punycode.ToAscii(obj.Trim().TrimEnd(new char[] { '.' }));
             Server = null;
             ServerQuery = string.Empty;
