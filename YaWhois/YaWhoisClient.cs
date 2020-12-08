@@ -161,6 +161,15 @@ namespace YaWhois
         }
 
 
+        private static readonly Dictionary<QueryParser.ServerHints, IDataParser> DataParserByHint =
+            new Dictionary<QueryParser.ServerHints, IDataParser>()
+        {
+            { QueryParser.ServerHints.AFILIAS, new AfiliasParser() },
+            { QueryParser.ServerHints.CRSNIC, new CrsNicParser() },
+            { QueryParser.ServerHints.IANA, new IanaParser() },
+            { QueryParser.ServerHints.NONE, new DefaultParser() }
+        };
+
         private IDataParser GetDataParser()
         {
             IDataParser parser;
@@ -168,22 +177,22 @@ namespace YaWhois
             switch (QueryParser.ServerHint)
             {
                 case QueryParser.ServerHints.IANA:
-                    parser = new IanaParser();
+                    parser = DataParserByHint[QueryParser.ServerHints.IANA];
                     break;
 
                 case QueryParser.ServerHints.AFILIAS:
-                    parser = new AfiliasParser();
+                    parser = DataParserByHint[QueryParser.ServerHints.AFILIAS];
                     break;
 
                 case QueryParser.ServerHints.CRSNIC:
-                    parser = new CrsNicParser();
+                    parser = DataParserByHint[QueryParser.ServerHints.CRSNIC];
                     break;
 
                 default:
                     if (DataParsersByServer.TryGetValue(QueryParser.Server, out Type datatype))
                         parser = (IDataParser)Activator.CreateInstance(datatype);
                     else
-                        parser = new DefaultParser();
+                        parser = DataParserByHint[QueryParser.ServerHints.NONE];
                     break;
             }
 
