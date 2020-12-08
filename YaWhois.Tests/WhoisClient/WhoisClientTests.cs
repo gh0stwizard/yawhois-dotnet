@@ -156,11 +156,6 @@ namespace YaWhois.Tests.WhoisClient
                 {
                     success = true;
                 }
-                finally
-                {
-                    // shutdown the server
-                    server_cts.Cancel();
-                }
             });
 
             var cancel_t = Task.Run(async () =>
@@ -170,7 +165,10 @@ namespace YaWhois.Tests.WhoisClient
                 client_cts.Cancel();
             });
 
-            await Task.WhenAll(server_t, client_t);
+            await Task.WhenAll(client_t);
+            server_cts.Cancel();
+            await server_t;
+
             Assert.IsTrue(success);
         }
     }
