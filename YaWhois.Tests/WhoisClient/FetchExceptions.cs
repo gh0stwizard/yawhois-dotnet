@@ -95,6 +95,10 @@ namespace YaWhois.Tests.WhoisClient
             {
                 gotexception = ae.InnerExceptions.Any(o => o is SocketException);
             }
+            catch (SocketException)
+            {
+                gotexception = true;
+            }
 
             Assert.IsTrue(gotexception);
         }
