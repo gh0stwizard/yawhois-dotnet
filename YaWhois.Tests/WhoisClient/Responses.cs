@@ -53,5 +53,66 @@ namespace YaWhois.Tests.WhoisClient
             _whois.QueryAsync(query).Wait();
             Assert.IsTrue(isError);
         }
+
+
+        [TestCase("ya.ru", "whois.iana.org")]
+        [TestCase("mail.bz", null, Description = "AFILIAS")]
+        [TestCase("67.227.191.5", null, Description = "ARIN / DefaultParser")]
+        public void AddRemoveParsers01(string query, string server)
+        {
+            int referrals = 0;
+
+            // the standard case
+            _whois.WhenResponseParsed += (o, e) =>
+            {
+                if (e.Referral != null && e.Referral.Length > 0)
+                    referrals++;
+            };
+            _whois.Query(query, server);
+
+            // register dumb parsers
+            _whois.RegisterParserByServer("whois.iana.org", null);
+            _whois.RegisterParserByServer("whois.afilias-grs.info", null);
+            _whois.RegisterParserByServer("whois.arin.net", null);
+
+            // now decrement the referrals value
+            _whois.WhenResponseParsed += (o, e) =>
+            {
+                if (e.Referral == null)
+                    referrals--;
+            };
+            _whois.Query(query, server);
+
+            Assert.AreEqual(0, referrals);
+        }
+
+
+        // The alternative way for IANA. This will force to use DefaultParser.
+        [TestCase("ya.ru", "whois.iana.org")]
+        public void AddRemoveParsers02(string query, string server)
+        {
+            int referrals = 0;
+
+            // the standard case
+            _whois.WhenResponseParsed += (o, e) =>
+            {
+                if (e.Referral != null && e.Referral.Length > 0)
+                    referrals++;
+            };
+            _whois.Query(query, server);
+
+            // Register dumb parsers.
+            _whois.UnregisterParserByServer("whois.iana.org");
+
+            // now decrement the referrals value
+            _whois.WhenResponseParsed += (o, e) =>
+            {
+                if (e.Referral == null)
+                    referrals--;
+            };
+            _whois.Query(query, server);
+
+            Assert.AreEqual(0, referrals);
+        }
     }
 }
