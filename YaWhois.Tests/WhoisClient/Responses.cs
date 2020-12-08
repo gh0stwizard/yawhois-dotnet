@@ -113,6 +113,17 @@ namespace YaWhois.Tests.WhoisClient
             _whois.Query(query, server);
 
             Assert.AreEqual(0, referrals);
+
+            // revert back
+            _whois.RegisterParserByServer("whois.iana.org", new YaWhois.Clients.IanaParser());
+            _whois.WhenResponseParsed += (o, e) =>
+            {
+                if (e.Referral != null && e.Referral.Length > 0)
+                    referrals++;
+            };
+            _whois.Query(query, server);
+
+            Assert.IsTrue(referrals > 0);
         }
 
 
