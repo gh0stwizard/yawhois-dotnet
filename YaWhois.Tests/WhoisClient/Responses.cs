@@ -70,6 +70,8 @@ namespace YaWhois.Tests.WhoisClient
             };
             _whois.Query(query, server);
 
+            Assert.IsTrue(referrals > 0);
+
             // register dumb parsers
             _whois.RegisterParserByServer("whois.iana.org", null);
             _whois.RegisterParserByServer("whois.afilias-grs.info", null);
@@ -100,6 +102,8 @@ namespace YaWhois.Tests.WhoisClient
                     referrals++;
             };
             _whois.Query(query, server);
+
+            Assert.IsTrue(referrals > 0);
 
             // Register dumb parsers.
             _whois.UnregisterParserByServer("whois.iana.org");
@@ -141,6 +145,8 @@ namespace YaWhois.Tests.WhoisClient
                     referrals++;
             };
             _whois.Query(query, server);
+
+            Assert.IsTrue(referrals > 0);
 
             // for all servers
             _whois.WhenRequestReady += (o, e) =>
