@@ -14,7 +14,7 @@
     <PackageTags>whois whois-client</PackageTags>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageLicenseExpression>BSD-2-Clause</PackageLicenseExpression>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -63,6 +63,7 @@
     </None>
   </ItemGroup>
 
+  <!-- See also https://github.com/NuGet/Home/wiki/DevelopmentDependency-support-for-PackageReference -->
   <ItemGroup>
     <PackageReference Include="IPAddressRange" Version="4.1.2">
       <PrivateAssets>all</PrivateAssets>
@@ -70,8 +71,8 @@
     </PackageReference>
     <PackageReference Include="Nunycode" Version="1.1.0" />
     <PackageReference Include="System.Memory" Version="4.5.4" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
-    <PackageReference Include="TinyCsvParser" Version="2.5.2">
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="5.0.0" />
+    <PackageReference Include="TinyCsvParser" Version="2.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
