@@ -360,6 +360,7 @@ namespace YaWhois.Data
             Tuple.Create("xn--3hcrj9c", Hints.AFILIAS, "whois.registry.in"),
             Tuple.Create("xn--45br5cyl", Hints.AFILIAS, "whois.registry.in"),
             Tuple.Create("xn--45brj9c", Hints.AFILIAS, "whois.registry.in"),
+            Tuple.Create("xn--4dbrk0ce", Hints.NONE, "whois.isoc.org.il"),
             Tuple.Create("xn--54b7fta0cc", Hints.NOSERVER, ""),
             Tuple.Create("xn--80ao21a", Hints.NONE, "whois.nic.kz"),
             Tuple.Create("xn--90a3ac", Hints.NONE, "whois.rnids.rs"),

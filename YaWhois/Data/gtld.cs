@@ -964,6 +964,7 @@ namespace YaWhois.Data
             "song",
             "sony",
             "soy",
+            "spa",
             "space",
             "spiegel",
             "sport",

@@ -1,3 +1,7 @@
+1.0.7
+  - Added TLD ".xn--4dbrk0ce" (https://github.com/rfc1036/whois/commit/ef3afe584e566582554856dfdb647053b2d3e4cd)
+  - Added gTLD ".spa" (https://github.com/rfc1036/whois/commit/0a7685e7be12e0b018132ffb2a22974ed5bb78b1)
+
 1.0.6  Tue 12/08/2020
   - Removed unnecessary dependicies form nuget package
   - Minor fixes
