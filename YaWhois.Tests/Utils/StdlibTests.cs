@@ -141,6 +141,16 @@ namespace YaWhois.Tests.Utils
         }
 
 
+        [TestCase("0xK", ExpectedResult = 0)]
+        public long Base16_0xGarbage(string value)
+        {
+            stdlib.errno = 0;
+            var r = stdlib.strtol(value, 0);
+            Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
+            return r;
+        }
+
+
         [TestCase("a")]
         [TestCase("10a")]
         public void BaseOverflow(string value)
@@ -158,43 +168,127 @@ namespace YaWhois.Tests.Utils
         }
 
 
-        [TestCase("JJ", 20 * 20 - 1)]
-        public void Base20(string value, int expected)
+        [TestCase("JJ", 20, ExpectedResult = 20 * 20 - 1)]
+        [TestCase("3723AI4E", 20, ExpectedResult = uint.MaxValue - 1)]
+        [TestCase("VV", 32, ExpectedResult = 32 * 32 - 1)]
+        [TestCase("3VVVVVU", 32, ExpectedResult = uint.MaxValue - 1)]
+        public uint AnyBaseUnsigned(string value, int @base)
         {
             stdlib.errno = 0;
-            var r = stdlib.strtol(value, 20);
-            Assert.AreEqual(expected, r);
+            var r = stdlib.strtoul(value, @base);
             Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
+            return r;
         }
 
 
-        [TestCase("VV", 32 * 32 - 1)]
-        public void Base32(string value, int expected)
+        [TestCase("5CBFJIA3FH26JA6", 20, ExpectedResult = long.MaxValue - 1)]
+        [TestCase("7VVVVVVVVVVVU", 32, ExpectedResult = long.MaxValue - 1)]
+        public long AnyBaseLong(string value, int @base)
         {
             stdlib.errno = 0;
-            var r = stdlib.strtol(value, 32);
-            Assert.AreEqual(expected, r);
+            var r = stdlib.strtoll(value, @base);
             Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
+            return r;
         }
 
 
-        [Test]
-        public void Overflow()
+        [Test(ExpectedResult = int.MaxValue)]
+        public int Overflow()
         {
             stdlib.errno = 0;
             var r = stdlib.strtol(OverflowNumber, 10);
-            Assert.AreEqual(long.MaxValue, r);
             Assert.AreEqual((int)stdlib.ErrorCodes.ERANGE, stdlib.errno);
+            return r;
         }
 
 
-        [Test]
-        public void OverflowUnsigned()
+        [Test(ExpectedResult = long.MaxValue)]
+        public long OverflowLong()
+        {
+            stdlib.errno = 0;
+            var r = stdlib.strtoll(OverflowNumber, 10);
+            Assert.AreEqual((int)stdlib.ErrorCodes.ERANGE, stdlib.errno);
+            return r;
+        }
+
+
+        [Test(ExpectedResult = uint.MaxValue)]
+        public uint OverflowUnsigned()
         {
             stdlib.errno = 0;
             var r = stdlib.strtoul(OverflowNumber, 10);
-            Assert.AreEqual(uint.MaxValue, r);
             Assert.AreEqual((int)stdlib.ErrorCodes.ERANGE, stdlib.errno);
+            return r;
+        }
+
+
+        [Test(ExpectedResult = uint.MaxValue)]
+        public uint OverflowUnsignedWithGarbage()
+        {
+            stdlib.errno = 0;
+            var r = stdlib.strtoul(uint.MaxValue.ToString() + "1Z", 10);
+            Assert.AreEqual((int)stdlib.ErrorCodes.ERANGE, stdlib.errno);
+            return r;
+        }
+
+
+        [Test(ExpectedResult = int.MaxValue)]
+        public int MaxValue()
+        {
+            stdlib.errno = 0;
+            var r = stdlib.strtol(int.MaxValue.ToString(), 10);
+            Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
+            return r;
+        }
+
+
+        [Test(ExpectedResult = uint.MaxValue)]
+        public uint MaxValueUnsigned()
+        {
+            stdlib.errno = 0;
+            var r = stdlib.strtoul(uint.MaxValue.ToString(), 10);
+            Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
+            return r;
+        }
+
+
+        [Test(ExpectedResult = long.MaxValue)]
+        public long MaxValueLong()
+        {
+            stdlib.errno = 0;
+            var r = stdlib.strtoll(long.MaxValue.ToString(), 10);
+            Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
+            return r;
+        }
+
+
+        [Test(ExpectedResult = long.MaxValue)]
+        public long MaxValueLong_Extended()
+        {
+            stdlib.errno = 0;
+            var r = stdlib.strtoll(long.MaxValue.ToString(), out long _, 10);
+            Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
+            return r;
+        }
+
+
+        [Test(ExpectedResult = ulong.MaxValue)]
+        public ulong MaxValueUnsignedLong()
+        {
+            stdlib.errno = 0;
+            var r = stdlib.strtoull(ulong.MaxValue.ToString(), 10);
+            Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
+            return r;
+        }
+
+
+        [Test(ExpectedResult = ulong.MaxValue)]
+        public ulong MaxValueUnsignedLong_Extended()
+        {
+            stdlib.errno = 0;
+            var r = stdlib.strtoull(ulong.MaxValue.ToString(), out long _, 10);
+            Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
+            return r;
         }
     }
 }
