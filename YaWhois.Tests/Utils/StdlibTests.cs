@@ -19,7 +19,7 @@ namespace YaWhois.Tests.Utils
         public void NullOrEmptyOrWhiteSpace(string value)
         {
             stdlib.errno = 0;
-            var r = stdlib.strtol(value, out long end, 10);
+            var r = stdlib.strtol(value, out int end, 10);
             Assert.AreEqual(0, r);
             Assert.AreEqual(0, end);
             Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
@@ -32,7 +32,7 @@ namespace YaWhois.Tests.Utils
         public void NullOrEmptyOrWhiteSpaceUnsinged(string value)
         {
             stdlib.errno = 0;
-            var r = stdlib.strtoul(value, out long end, 10);
+            var r = stdlib.strtoul(value, out int end, 10);
             Assert.AreEqual(0, r);
             Assert.AreEqual(0, end);
             Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
@@ -44,7 +44,7 @@ namespace YaWhois.Tests.Utils
         public void InvalidBase(int @base)
         {
             stdlib.errno = 0;
-            var r = stdlib.strtol(Number, out long end, @base);
+            var r = stdlib.strtol(Number, out int end, @base);
             Assert.AreEqual(0, r);
             Assert.AreEqual(0, end);
             Assert.AreEqual((int)stdlib.ErrorCodes.EINVAL, stdlib.errno);
@@ -56,7 +56,7 @@ namespace YaWhois.Tests.Utils
         public void InvalidBaseUnsigned(int @base)
         {
             stdlib.errno = 0;
-            var r = stdlib.strtoul(Number, out long end, @base);
+            var r = stdlib.strtoul(Number, out int end, @base);
             Assert.AreEqual(0, r);
             Assert.AreEqual(0, end);
             Assert.AreEqual((int)stdlib.ErrorCodes.EINVAL, stdlib.errno);
@@ -67,7 +67,7 @@ namespace YaWhois.Tests.Utils
         public void DefaultBase()
         {
             stdlib.errno = 0;
-            var r = stdlib.strtol(Number, out long end, 0);
+            var r = stdlib.strtol(Number, out int end, 0);
             Assert.AreEqual(long.Parse(Number), r);
             Assert.AreEqual(Number.Length - 1, end);
             Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
@@ -78,7 +78,7 @@ namespace YaWhois.Tests.Utils
         public void DefaultBaseUnsigned()
         {
             stdlib.errno = 0;
-            var r = stdlib.strtoul(Number, out long end, 0);
+            var r = stdlib.strtoul(Number, out int end, 0);
             Assert.AreEqual(ulong.Parse(Number), r);
             Assert.AreEqual(Number.Length - 1, end);
             Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
@@ -99,7 +99,7 @@ namespace YaWhois.Tests.Utils
         public void NegativeNumberUnsignedLong()
         {
             stdlib.errno = 0;
-            var r = stdlib.strtox("-" + Number, out long end, 10, ulong.MaxValue);
+            var r = stdlib.strtox("-" + Number, out int _, 10, ulong.MaxValue);
             var expected = ulong.MaxValue - ulong.Parse(Number) + 1; // 18446744073709539271
             Assert.AreEqual(expected, r);
             Assert.AreEqual(18446744073709539271, r);
@@ -266,7 +266,7 @@ namespace YaWhois.Tests.Utils
         public long MaxValueLong_Extended()
         {
             stdlib.errno = 0;
-            var r = stdlib.strtoll(long.MaxValue.ToString(), out long _, 10);
+            var r = stdlib.strtoll(long.MaxValue.ToString(), out int _, 10);
             Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
             return r;
         }
@@ -286,9 +286,27 @@ namespace YaWhois.Tests.Utils
         public ulong MaxValueUnsignedLong_Extended()
         {
             stdlib.errno = 0;
-            var r = stdlib.strtoull(ulong.MaxValue.ToString(), out long _, 10);
+            var r = stdlib.strtoull(ulong.MaxValue.ToString(), out int _, 10);
             Assert.AreEqual((int)stdlib.ErrorCodes.NONE, stdlib.errno);
             return r;
+        }
+
+
+        [Test()]
+        public void Utf8String()
+        {
+            stdlib.encoding = Encoding.UTF8;
+            var s1 = "123\u01FD456";
+            var r = stdlib.strtol(s1, out int end, 10);
+            Assert.AreEqual(123, r);
+            Assert.AreEqual("\u01FD456", s1.Substring(end));
+
+            var s2 = s1.Substring(end+1);
+            r = stdlib.strtol(s2, 10);
+            Assert.AreEqual(456, r);
+
+            // set back default encoding for other tests
+            stdlib.encoding = Encoding.ASCII;
         }
     }
 }

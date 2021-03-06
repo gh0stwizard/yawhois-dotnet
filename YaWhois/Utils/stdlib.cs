@@ -35,6 +35,7 @@ namespace YaWhois.Utils
     {
         // TODO: thread-safety?
         public static int errno;
+        public static Encoding encoding = Encoding.ASCII;
 
 
         public enum ErrorCodes
@@ -86,20 +87,27 @@ namespace YaWhois.Utils
                 return 0;
             }
 
-            while (isspace(c = (byte)f.ReadByte())) ;
+            byte ReadChar()
+            {
+                int b = f.ReadByte();
+                if (b >= 0 && b <= 0x7f) return (byte)b;
+                return 0xff;
+            }
+
+            while (isspace(c = ReadChar())) ;
 
             if (c == '+' || c == '-')
             {
                 neg = c == '-' ? -1 : 0;
-                c = (byte)f.ReadByte();
+                c = ReadChar();
             }
 
             if ((@base == 0 || @base == 16) && c == '0')
             {
-                c = (byte)f.ReadByte();
+                c = ReadChar();
                 if ((c | 32) == 'x')
                 {
-                    c = (byte)f.ReadByte();
+                    c = ReadChar();
                     if (table[c] >= 16)
                     {
                         f.Position--;
@@ -128,31 +136,31 @@ namespace YaWhois.Utils
 
             if (@base == 10)
             {
-                for (x = 0; ((uint)c - '0') < 10u && x <= uint.MaxValue / 10 - 1; c = (byte)f.ReadByte())
+                for (x = 0; ((uint)c - '0') < 10u && x <= uint.MaxValue / 10 - 1; c = ReadChar())
                     x = x * 10 + (uint)(c - '0');
-                for (y = x; ((uint)c - '0') < 10u && y <= ulong.MaxValue / 10 && 10 * y <= ulong.MaxValue - (uint)(c - '0'); c = (byte)f.ReadByte())
+                for (y = x; ((uint)c - '0') < 10u && y <= ulong.MaxValue / 10 && 10 * y <= ulong.MaxValue - (uint)(c - '0'); c = ReadChar())
                     y = y * 10 + (uint)(c - '0');
                 if (((uint)c - '0') >= 10u) goto done;
             }
             else if ((@base & @base - 1) == 0) // bases: 2, 4, 8, 16, 32
             {
                 int bs = "\0\x01\x02\x04\x07\x03\x06\x05"[(0x17 * (int)@base) >> 5 & 7];
-                for (x = 0; table[c] < @base && x <= uint.MaxValue / 32; c = (byte)f.ReadByte())
+                for (x = 0; table[c] < @base && x <= uint.MaxValue / 32; c = ReadChar())
                     x = x << bs | table[c];
-                for (y = x; table[c] < @base && y <= ulong.MaxValue >> bs; c = (byte)f.ReadByte())
+                for (y = x; table[c] < @base && y <= ulong.MaxValue >> bs; c = ReadChar())
                     y = y << bs | table[c];
             }
             else
             {
-                for (x = 0; table[c] < @base && x <= uint.MaxValue / 36 - 1; c = (byte)f.ReadByte())
+                for (x = 0; table[c] < @base && x <= uint.MaxValue / 36 - 1; c = ReadChar())
                     x = x * @base + table[c];
-                for (y = x; table[c] < @base && y <= ulong.MaxValue / @base && @base * y <= ulong.MaxValue - table[c]; c = (byte)f.ReadByte())
+                for (y = x; table[c] < @base && y <= ulong.MaxValue / @base && @base * y <= ulong.MaxValue - table[c]; c = ReadChar())
                     y = y * @base + table[c];
             }
 
             if (table[c] < @base)
             {
-                for (; table[c] < @base; c = (byte)f.ReadByte()) ;
+                for (; table[c] < @base; c = ReadChar()) ;
                 errno = (int)ErrorCodes.ERANGE;
                 y = lim;
                 if ((lim & 1) > 0) neg = 0;
@@ -185,7 +193,7 @@ namespace YaWhois.Utils
         }
 
 
-        public static ulong strtox(string s, out long end, int @base, ulong lim)
+        public static ulong strtox(string s, out int end, int @base, ulong lim)
         {
             if (string.IsNullOrWhiteSpace(s))
             {
@@ -193,65 +201,66 @@ namespace YaWhois.Utils
                 return 0;
             }
 
-            var bytes = Encoding.ASCII.GetBytes(s);
+            var bytes = encoding.GetBytes(s);
             using (var stream = new MemoryStream(bytes))
             {
                 var y = intscan(stream, (uint)@base, 1, lim);
-                // XXX: currently it used for the case "string[index]", which are unicode strings in C#.
-                // But in the app these strings contain only ASCII and this "hack" is working.
-                // Correct implementation should consider that 'end' value points to
-                // a character position and not to a byte position.
-                end = stream.Position;
+
+                if (Encoding.ASCII.Equals(encoding))
+                    end = Convert.ToInt32(stream.Position);
+                else
+                    end = encoding.GetCharCount(bytes, 0, Convert.ToInt32(stream.Position));
+
                 return y;
             }
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int strtol(string s, out long end, int @base)
+        public static int strtol(string s, out int end, int @base)
         {
             return (int)strtox(s, out end, @base, int.MaxValue);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int strtol(string s, int @base)
         {
-            return (int)strtox(s, out long _, @base, int.MaxValue);
+            return (int)strtox(s, out int _, @base, int.MaxValue);
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint strtoul(string s, out long end, int @base)
+        public static uint strtoul(string s, out int end, int @base)
         {
             return (uint)strtox(s, out end, @base, uint.MaxValue);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint strtoul(string s, int @base)
         {
-            return (uint)strtox(s, out long _, @base, uint.MaxValue);
+            return (uint)strtox(s, out int _, @base, uint.MaxValue);
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long strtoll(string s, out long end, int @base)
+        public static long strtoll(string s, out int end, int @base)
         {
             return (long)strtox(s, out end, @base, long.MaxValue);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long strtoll(string s, int @base)
         {
-            return (long)strtox(s, out long _, @base, long.MaxValue);
+            return (long)strtox(s, out int _, @base, long.MaxValue);
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong strtoull(string s, out long end, int @base)
+        public static ulong strtoull(string s, out int end, int @base)
         {
             return strtox(s, out end, @base, ulong.MaxValue);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong strtoull(string s, int @base)
         {
-            return strtox(s, out long _, @base, ulong.MaxValue);
+            return strtox(s, out int _, @base, ulong.MaxValue);
         }
     }
 }

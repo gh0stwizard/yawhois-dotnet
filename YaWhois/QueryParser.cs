@@ -600,13 +600,12 @@ namespace YaWhois
                 if (i >= 4)
                     return "0.0.0.0";
 
-                // XXX: 'end' is a byte position, but used as a character ones.
-                var oct = stdlib.strtol(s, out long end, 10);
-                if (stdlib.errno != 0 || oct < 0 || oct > 255 || s[(int)end] != '.')
+                var oct = stdlib.strtol(s, out int end, 10);
+                if (stdlib.errno != 0 || oct < 0 || oct > 255 || s[end] != '.')
                     return "0.0.0.0";
 
                 abc[i] = oct;
-                s = s.Substring((int)end + 1);
+                s = s.Substring(end + 1);
             }
 
             if (i == 1)
