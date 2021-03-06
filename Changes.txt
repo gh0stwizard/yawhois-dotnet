@@ -1,3 +1,9 @@
+1.0.8  Sat 03/06/2021
+  - Removed 72 new gTLDs which are no longer active (https://github.com/rfc1036/whois/commit/624ad4dc174f54eae9f8fd4712eda22adc95a489)
+  - Removed the .cd TLD server (https://github.com/rfc1036/whois/commit/c5ae41616803e2ad48eacb3bc80d9420484c79de)
+  - Removed the .cf TLD server (https://github.com/rfc1036/whois/commit/64e8342449e2e205a0f3fbc0b3bae3397fa549fb)
+  - Updated the .ga TLD server (https://github.com/rfc1036/whois/commit/57a51c9fdb4d310e8deb3899e59c5a017c6b107b)
+
 1.0.7  Wed 02/17/2021
   - Added TLD ".xn--4dbrk0ce" (https://github.com/rfc1036/whois/commit/ef3afe584e566582554856dfdb647053b2d3e4cd)
   - Added gTLD ".spa" (https://github.com/rfc1036/whois/commit/0a7685e7be12e0b018132ffb2a22974ed5bb78b1)
