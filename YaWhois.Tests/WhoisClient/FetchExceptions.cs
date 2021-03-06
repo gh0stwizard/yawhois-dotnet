@@ -152,16 +152,38 @@ namespace YaWhois.Tests.WhoisClient
         public async Task ConnectionTimeout_Async()
         {
             bool gotexception = false;
+            bool isTimeoutException = false;
+            bool isSocketException = false;
 
             _whois.WhenExceptionThrown += (o, args) =>
             {
-                gotexception = args.Exception is TimeoutException;
+                gotexception = true;
+                isTimeoutException = args.Exception is TimeoutException;
+
+                // workaround for appveyor's server
+                if (!isTimeoutException && args.Exception is AggregateException ae)
+                {
+                    var ie = ae.InnerExceptions;
+                    isTimeoutException = ie.Any(e => e is TimeoutException);
+                    isSocketException = ie.Any(e => e is SocketException);
+                }
             };
 
             _whois.ConnectTimeout = 1;
             await _whois.QueryAsync("example.com", UnavailableServer);
 
-            Assert.IsTrue(gotexception);
+            Assert.IsTrue(gotexception, "GotException");
+
+            if (isSocketException)
+            {
+                Assert.Warn("Expected TimeoutException, but got SocketException.");
+                Assert.IsFalse(isTimeoutException, "Not IsTimeoutException");
+            }
+            else
+            {
+                Assert.IsFalse(isSocketException, "Not IsSocketException");
+                Assert.IsTrue(isTimeoutException, "IsTimeoutException");
+            }
         }
 
 
