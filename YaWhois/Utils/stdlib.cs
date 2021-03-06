@@ -128,10 +128,10 @@ namespace YaWhois.Utils
 
             if (@base == 10)
             {
-                for (x = 0; ((uint)c - '0') < 10u && x < uint.MaxValue / 10 - 1; c = (byte)f.ReadByte())
-                    x = x * 10 + c - '0';
-                for (y = x; ((uint)c - '0') < 10u && y < ulong.MaxValue / 10 && 10 * y <= ulong.MaxValue - (uint)(c - '0'); c = (byte)f.ReadByte())
-                    y = y * 10 + c - '0';
+                for (x = 0; ((uint)c - '0') < 10u && x <= uint.MaxValue / 10 - 1; c = (byte)f.ReadByte())
+                    x = x * 10 + (uint)(c - '0');
+                for (y = x; ((uint)c - '0') < 10u && y <= ulong.MaxValue / 10 && 10 * y <= ulong.MaxValue - (uint)(c - '0'); c = (byte)f.ReadByte())
+                    y = y * 10 + (uint)(c - '0');
                 if (((uint)c - '0') >= 10u) goto done;
             }
             else if ((@base & @base - 1) == 0) // bases: 2, 4, 8, 16, 32
@@ -208,26 +208,50 @@ namespace YaWhois.Utils
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long strtol(string s, out long end, int @base)
+        public static int strtol(string s, out long end, int @base)
         {
-            return (long)strtox(s, out end, @base, long.MaxValue);
+            return (int)strtox(s, out end, @base, int.MaxValue);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long strtol(string s, int @base)
+        public static int strtol(string s, int @base)
         {
-            return (long)strtox(s, out long _, @base, long.MaxValue);
+            return (int)strtox(s, out long _, @base, int.MaxValue);
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint strtoul(string s, out long end, int @base)
         {
-            return (uint)strtox(s, out end, @base, ulong.MaxValue);
+            return (uint)strtox(s, out end, @base, uint.MaxValue);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint strtoul(string s, int @base)
         {
-            return (uint)strtox(s, out long _, @base, ulong.MaxValue);
+            return (uint)strtox(s, out long _, @base, uint.MaxValue);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long strtoll(string s, out long end, int @base)
+        {
+            return (long)strtox(s, out end, @base, long.MaxValue);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long strtoll(string s, int @base)
+        {
+            return (long)strtox(s, out long _, @base, long.MaxValue);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong strtoull(string s, out long end, int @base)
+        {
+            return strtox(s, out end, @base, ulong.MaxValue);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong strtoull(string s, int @base)
+        {
+            return strtox(s, out long _, @base, ulong.MaxValue);
         }
     }
 }
