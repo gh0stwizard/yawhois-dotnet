@@ -45,5 +45,31 @@ namespace YaWhois
         /// The exception thrown by QueryAsync() method.
         /// </summary>
         public Exception Exception { get; internal set; }
+
+
+        /// <summary>
+        /// Sets flags supported by RIPE-like servers.
+        /// </summary>
+        /// <param name="obj"></param>
+        public void SetRipeFlags(YaWhoisRipeFlags obj)
+        {
+            if (Query.Length == 0)
+                return;
+
+            if (obj.HasFlag(YaWhoisRipeFlags.BRIEF))
+                Query = "-b " + Query;
+
+            if (obj.HasFlag(YaWhoisRipeFlags.EXACT))
+                Query = "-x " + Query;
+
+            if (obj.HasFlag(YaWhoisRipeFlags.REVERSE_DOMAIN))
+                Query = "-d " + Query;
+
+            if (obj.HasFlag(YaWhoisRipeFlags.NO_FILTERING))
+                Query = "-B " + Query;
+
+            if (obj.HasFlag(YaWhoisRipeFlags.NO_GROUPING))
+                Query = "-G " + Query;
+        }
     }
 }

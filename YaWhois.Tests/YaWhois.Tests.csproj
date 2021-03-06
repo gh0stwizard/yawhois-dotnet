@@ -58,6 +58,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>IanaOrg.resx</DependentUpon>
     </Compile>
+    <Compile Update="WhoisClient\Resources\RIPE.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RIPE.resx</DependentUpon>
+    </Compile>
+    <Compile Update="WhoisClient\Resources\RIPE_NotFiltered.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RIPE_NotFiltered.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -80,6 +90,14 @@
     <EmbeddedResource Update="WhoisClient\Resources\IanaOrg.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>IanaOrg.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="WhoisClient\Resources\RIPE.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>RIPE.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="WhoisClient\Resources\RIPE_NotFiltered.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>RIPE_NotFiltered.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 

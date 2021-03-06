@@ -9,25 +9,44 @@ namespace YaWhois.Tests.WhoisClient
 {
     public class TestClient : YaWhoisClient
     {
+        private ResourceManager _rm;
+        private bool _use_custom_rm;
+
         private readonly static Dictionary<string, Type> ResourceMap = new Dictionary<string, Type>()
         {
             { "whois.iana.org", typeof(Resources.IanaOrg) },
             { "whois.arin.net", typeof(Resources.ARIN) },
             { "whois.afilias-grs.info", typeof(Resources.Afilias) },
             { "whois.verisign-grs.com", typeof(Resources.CrsNic) },
+            { "whois.ripe.net", typeof(Resources.RIPE) }
         };
 
 
-        private static string GetResponse(string server, string query)
+        // XXX: no critic
+        public void SetResourceMap(Type resType)
         {
-            ResourceManager rm;
+            _rm = new ResourceManager(resType);
+            _use_custom_rm = true;
+        }
 
-            if (ResourceMap.TryGetValue(server, out Type rsxType))
-                rm = new ResourceManager(rsxType);
-            else
-                rm = Resources.General.ResourceManager;
 
-            return rm.GetString(query) ?? string.Empty;
+        public void ResetResourceMap()
+        {
+            _use_custom_rm = false;
+        }
+
+
+        private string GetResponse(string server, string query)
+        {
+            if (!_use_custom_rm)
+            {
+                if (ResourceMap.TryGetValue(server, out Type rsxType))
+                    _rm = new ResourceManager(rsxType);
+                else
+                    _rm = Resources.General.ResourceManager;
+            }
+
+            return _rm.GetString(query) ?? string.Empty;
         }
 
 
